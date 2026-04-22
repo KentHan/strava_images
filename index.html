@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鐵道馬接力賽 — 路線示意圖</title>
+
+<!-- Leaflet CSS — try multiple CDNs -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Bebas+Neue&display=swap');
+
+  :root {
+    --bg: #0a0f1e; --panel: #111827; --border: rgba(255,255,255,0.08);
+    --text: #e8eaf0; --muted: #6b7280;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,15,30,0.98);
+    z-index: 100;
+    flex-shrink: 0;
+  }
+
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, #fff 0%, #00BBF9 50%, #06D6A0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    white-space: nowrap;
+  }
+
+  header .subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .main-layout {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .sidebar-section {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-section h2 {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .avatar-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .avatar-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .avatar-card:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.07); }
+
+  .avatar-card .leg-badge {
+    position: absolute;
+    top: -6px; left: -6px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    color: #000;
+  }
+
+  .avatar-preview {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  .avatar-preview img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-name {
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .avatar-dist {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  input[type="file"] { display: none; }
+
+  .leg-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .leg-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+
+  .leg-item.active { background: rgba(255,255,255,0.08); border-color: var(--border); }
+
+  .leg-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .leg-label { flex: 1; font-size: 12px; }
+  .leg-km { font-size: 11px; color: var(--muted); }
+
+  .controls {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0; /* don't compress play button area */
+  }
+
+  .btn-play {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #00BBF9, #06D6A0);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(0,187,249,0.3);
+  }
+
+  .btn-play:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(0,187,249,0.45); }
+
+  .speed-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .speed-control label { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+  input[type="range"] {
+    flex: 1;
+    accent-color: #00BBF9;
+  }
+
+  .speed-val { font-size: 11px; width: 28px; text-align: right; }
+
+  .scrubber-wrap {
+    position: relative;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .scrubber-track {
+    position: absolute;
+    left: 0; right: 0;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .scrubber-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00BBF9, #06D6A0);
+    width: 0%;
+    border-radius: 4px;
+  }
+
+  .scrubber-thumb {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    left: 0%;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.5);
+    transition: transform 0.1s, box-shadow 0.1s;
+    pointer-events: none;
+  }
+
+  .scrubber-wrap:hover .scrubber-thumb,
+  .scrubber-wrap.dragging .scrubber-thumb {
+    transform: translateX(-50%) scale(1.3);
+    box-shadow: 0 2px 10px rgba(0,187,249,0.6);
+  }
+
+  .status-text {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    min-height: 16px;
+  }
+
+  #map {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    background: #0d1520;
+  }
+
+  /* Dark tiles via CSS filter */
+  .leaflet-tile-pane {
+    filter: invert(0.92) hue-rotate(180deg) brightness(0.95) contrast(0.85) saturate(0.6);
+  }
+
+  .static-avatar-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .static-avatar-marker .sa-wrap {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid white;
+    background: #1a2035;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.55);
+  }
+
+  .static-avatar-marker .sa-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  .runner-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .runner-marker .ring {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+
+  .runner-marker .avatar {
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    border: 3px solid white;
+    background: #1a2035;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  .runner-marker .avatar img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 var(--ring, rgba(255,255,255,0.5)); }
+    50%      { box-shadow: 0 0 0 14px transparent; }
+  }
+
+  .checkpoint-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .checkpoint-marker div {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  /* Finished (parked) runner markers — no animation */
+  .finished-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .finished-marker .fi-avatar {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 3px solid white;
+    overflow: hidden;
+    background: #1a2035;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    opacity: 0.85;
+  }
+
+  .finished-marker .fi-avatar img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  /* Static per-leg avatar markers */
+  .leg-avatar-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  .leg-avatar-marker .lam-wrap {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    border: 2.5px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.55);
+    background: #1a2035;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    opacity: 0.82;
+  }
+
+  .leg-avatar-marker .lam-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  /* Active (running) state — applied via JS */
+  .leg-avatar-marker.active .lam-wrap {
+    transform: scale(1.55);
+    box-shadow: 0 0 0 3px var(--leg-color, #fff), 0 4px 16px rgba(0,0,0,0.7);
+    opacity: 1;
+    animation: lam-pulse 1.1s ease-in-out infinite;
+  }
+
+  @keyframes lam-pulse {
+    0%, 100% { box-shadow: 0 0 0 3px var(--leg-color, #fff), 0 0 0 3px rgba(255,255,255,0.0); }
+    50%       { box-shadow: 0 0 0 3px var(--leg-color, #fff), 0 0 0 10px rgba(255,255,255,0.0); }
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    transition: transform 0.3s ease;
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .gpx-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .gpx-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 11px;
+  }
+
+  .gpx-btn:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.07); }
+
+  .gpx-btn .gpx-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .gpx-btn .gpx-label { font-weight: 700; }
+  .gpx-btn .gpx-status { font-size: 10px; color: var(--muted); }
+  .gpx-btn.loaded .gpx-status { color: #06D6A0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🚂 鐵道馬接力賽</h1>
+    <div class="subtitle">RAILWAY MARATHON RELAY — 七棒路線示意圖</div>
+  </div>
+</header>
+
+<div class="main-layout">
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <h2>選手大頭照（點擊上傳）</h2>
+      <div class="avatar-grid" id="avatarGrid"></div>
+    </div>
+
+    <div class="sidebar-section" style="display:none">
+      <h2>更新 GPX 路線（逐棒上傳）</h2>
+      <div class="gpx-grid" id="gpxGrid"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <h2>路線圖例</h2>
+      <div class="leg-list" id="legList"></div>
+    </div>
+
+    <div class="controls">
+      <h2 style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">播放控制</h2>
+      <div class="scrubber-wrap" id="scrubberWrap">
+        <div class="scrubber-track">
+          <div class="scrubber-fill" id="scrubberFill"></div>
+        </div>
+        <div class="scrubber-thumb" id="scrubberThumb"></div>
+      </div>
+      <div class="status-text" id="statusText">準備就緒 — 按下 PLAY 開始</div>
+      <div class="speed-control">
+        <label>速度</label>
+        <input type="range" id="speedSlider" min="1" max="10" value="5">
+        <span class="speed-val" id="speedVal">5×</span>
+      </div>
+      <button class="btn-play" id="playBtn">▶ PLAY</button>
+    </div>
+  </aside>
+
+  <div id="map"></div>
+</div>
+
+<div id="fileInputs"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const LEGS = [
+  { id: 1, dist: '5.1K', color: '#FF4D4D', name: '第一棒',
+    gpxLoaded: true,
+    waypoints: [
+      [25.0181261, 121.943704],
+      [25.01807, 121.94353],
+      [25.01807, 121.94332],
+      [25.0174, 121.94304],
+      [25.01653, 121.94296],
+      [25.0163912, 121.9434704],
+      [25.0164, 121.94354],
+      [25.0163, 121.94361],
+      [25.01617, 121.94397],
+      [25.01607, 121.9442],
+      [25.01607, 121.94426],
+      [25.01611, 121.94429],
+      [25.01607, 121.94444],
+      [25.01601, 121.94469],
+      [25.01599, 121.94478],
+      [25.01571, 121.94564],
+      [25.01561, 121.94587],
+      [25.01543, 121.94634],
+      [25.01527, 121.94659],
+      [25.0151, 121.94684],
+      [25.01493, 121.94736],
+      [25.01465, 121.94846],
+      [25.01462, 121.94868],
+      [25.0145, 121.94984],
+      [25.01446, 121.9501],
+      [25.01436, 121.95032],
+      [25.01413, 121.95067],
+      [25.01387, 121.95103],
+      [25.01347, 121.95149],
+      [25.01241, 121.95238],
+      [25.01212, 121.95256],
+      [25.01185, 121.95277],
+      [25.01162, 121.95293],
+      [25.01148, 121.95295],
+      [25.01135, 121.95293],
+      [25.01089, 121.95278],
+      [25.00933, 121.95252],
+      [25.00861, 121.95258],
+      [25.00767, 121.95312],
+      [25.00701, 121.95401],
+      [25.00686, 121.95458],
+      [25.00667, 121.95502],
+      [25.00634, 121.95573],
+      [25.00617, 121.95622],
+      [25.00566, 121.95685],
+      [25.00536, 121.95731],
+      [25.00522, 121.95773],
+      [25.00493, 121.95811],
+      [25.00456, 121.95816],
+      [25.00419, 121.95823],
+      [25.002, 121.95857],
+      [25.00074, 121.95867],
+      [24.99984, 121.95869],
+      [24.99804, 121.95868],
+      [24.99517, 121.95854],
+      [24.99107, 121.95802],
+      [24.99019, 121.95783],
+      [24.98758, 121.95706],
+      [24.98422, 121.95568],
+      [24.98354, 121.95522],
+      [24.9834491, 121.9551533],
+    ]
+  },
+  { id: 2, dist: '15.1K', color: '#FF9F1C', name: '第二棒',
+    gpxLoaded: true,
+    waypoints: [
+      [24.9838475, 121.9555537],
+      [24.98403, 121.95591],
+      [24.9840063, 121.956609],
+      [24.98375, 121.95946],
+      [24.98369, 121.96077],
+      [24.98364, 121.96284],
+      [24.98397, 121.96455],
+      [24.98465, 121.96623],
+      [24.98589, 121.9676],
+      [24.98642, 121.9688],
+      [24.98692, 121.97088],
+      [24.98701, 121.97193],
+      [24.98813, 121.97298],
+      [24.98868, 121.97384],
+      [24.98963, 121.97465],
+      [24.99084, 121.97558],
+      [24.99187, 121.9763],
+      [24.99258, 121.97751],
+      [24.99288, 121.97872],
+      [24.99285, 121.98023],
+      [24.99291, 121.98103],
+      [24.99287, 121.98181],
+      [24.99309, 121.98257],
+      [24.99373, 121.9836],
+      [24.99673, 121.9859],
+      [24.99788, 121.98785],
+      [24.99871, 121.98915],
+      [24.99957, 121.99089],
+      [25.0006194, 121.9931298],
+      [25.00106, 121.99374],
+      [25.00208, 121.99426],
+      [25.0028, 121.99466],
+      [25.00368, 121.99598],
+      [25.00399, 121.99685],
+      [25.00406, 121.99885],
+      [25.00426, 121.99992],
+      [25.00414, 122.00119],
+      [25.00419, 122.00176],
+      [25.00473, 122.00238],
+      [25.00705, 122.00302],
+      [25.00878, 122.0035],
+      [25.00988, 122.00332],
+      [25.01107, 122.00264],
+      [25.01159, 122.00179],
+      [25.01249, 122.00023],
+      [25.01467, 121.99861],
+      [25.01578, 121.99803],
+      [25.01671, 121.99777],
+      [25.01695, 121.99711],
+      [25.01677, 121.9965],
+      [25.01433, 121.99456],
+      [25.01265, 121.99326],
+      [25.01222, 121.99231],
+      [25.01203, 121.99069],
+      [25.01228, 121.99002],
+      [25.01273, 121.98968],
+      [25.01318, 121.98953],
+      [25.01422, 121.98921],
+      [25.01524, 121.98921],
+      [25.01568, 121.9889],
+      [25.01609, 121.98855],
+      [25.0177, 121.98825],
+      [25.01916, 121.98794],
+      [25.01959, 121.98743],
+      [25.02039, 121.98596],
+      [25.02113, 121.98497],
+      [25.02156, 121.98359],
+      [25.02235, 121.98185],
+      [25.02297, 121.98004],
+      [25.02378, 121.97818],
+      [25.02387, 121.9767],
+      [25.02434, 121.97457],
+      [25.02454, 121.97153],
+      [25.02379, 121.96987],
+      [25.02346, 121.96836],
+      [25.02313, 121.96703],
+      [25.02169, 121.96532],
+      [25.02122, 121.96367],
+      [25.02048, 121.9618],
+      [25.02059, 121.96022],
+      [25.02012, 121.959],
+      [25.01961, 121.95747],
+      [25.02113, 121.95381],
+      [25.02014, 121.95169],
+      [25.01847, 121.95055],
+      [25.01818, 121.95008],
+      [25.01748, 121.94793],
+      [25.01696, 121.94672],
+      [25.01657, 121.9427],
+      [25.0170656, 121.9428996],
+    ]
+  },
+  { id: 3, dist: '5.9K', color: '#2EC4B6', name: '第三棒',
+    gpxLoaded: true,
+    waypoints: [
+      [25.0170656, 121.9428996],
+      [25.01657, 121.9427],
+      [25.01664, 121.94242],
+      [25.01673, 121.94218],
+      [25.0169, 121.94183],
+      [25.01706, 121.94157],
+      [25.01734, 121.94116],
+      [25.01766, 121.94074],
+      [25.01794, 121.94032],
+      [25.01815, 121.93996],
+      [25.01826, 121.93974],
+      [25.01834, 121.93949],
+      [25.01837, 121.9392],
+      [25.01838, 121.93904],
+      [25.01842, 121.93858],
+      [25.01841, 121.93843],
+      [25.0184, 121.93829],
+      [25.01834, 121.93773],
+      [25.01831, 121.93741],
+      [25.01828, 121.93708],
+      [25.01826, 121.93683],
+      [25.01824, 121.93646],
+      [25.01823, 121.93614],
+      [25.01822, 121.936],
+      [25.01824, 121.93575],
+      [25.01828, 121.93547],
+      [25.01831, 121.93524],
+      [25.01834, 121.93504],
+      [25.01838, 121.93478],
+      [25.01841, 121.93457],
+      [25.01847, 121.93435],
+      [25.01853, 121.93413],
+      [25.01864, 121.93391],
+      [25.01873, 121.93374],
+      [25.0188, 121.93361],
+      [25.01886, 121.9335],
+      [25.01904, 121.93316],
+      [25.01914, 121.93294],
+      [25.01922, 121.93277],
+      [25.01931, 121.93258],
+      [25.01941, 121.93236],
+      [25.01949, 121.9322],
+      [25.01956, 121.93208],
+      [25.01965, 121.93194],
+      [25.01992, 121.93153],
+      [25.02003, 121.93139],
+      [25.02027, 121.93105],
+      [25.02039, 121.93089],
+      [25.02068, 121.93048],
+      [25.02085, 121.93016],
+      [25.02104, 121.92985],
+      [25.02134, 121.92943],
+      [25.02173, 121.92889],
+      [25.02196, 121.92867],
+      [25.02216, 121.92856],
+      [25.02259, 121.92844],
+      [25.02298, 121.92831],
+      [25.02328, 121.9281],
+      [25.02354, 121.9278],
+      [25.02374, 121.92743],
+      [25.02407, 121.92683],
+      [25.02429, 121.92658],
+      [25.02457, 121.92641],
+      [25.02491, 121.92632],
+      [25.02517, 121.92636],
+      [25.02525, 121.92638],
+      [25.02645, 121.92664],
+      [25.027, 121.92677],
+      [25.02713, 121.92689],
+      [25.02723, 121.92701],
+      [25.02744, 121.92713],
+      [25.02783, 121.9274],
+      [25.02817, 121.92764],
+      [25.02856, 121.92791],
+      [25.02886, 121.92812],
+      [25.02933, 121.92842],
+      [25.0297, 121.92864],
+      [25.02998, 121.92876],
+      [25.02972, 121.9289],
+      [25.02937, 121.92878],
+      [25.02926, 121.92877],
+      [25.0292, 121.92884],
+      [25.0291, 121.92906],
+      [25.02882, 121.92899],
+      [25.02867, 121.92898],
+      [25.02855, 121.92904],
+      [25.02852, 121.9293],
+      [25.0285, 121.9295],
+      [25.02845, 121.92958],
+      [25.02836, 121.92967],
+      [25.02827, 121.92979],
+      [25.0282, 121.92991],
+      [25.02808, 121.93023],
+      [25.02797, 121.9306],
+      [25.02788, 121.93073],
+      [25.02753, 121.93107],
+      [25.0274, 121.9312],
+      [25.02729, 121.93136],
+      [25.02707, 121.9314],
+      [25.02697, 121.93124],
+      [25.0268, 121.93112],
+      [25.02651, 121.93095],
+      [25.02633, 121.93089],
+      [25.02618, 121.93085],
+      [25.02606, 121.93041],
+      [25.02604, 121.93022],
+      [25.02612, 121.92979],
+      [25.0262, 121.92947],
+      [25.02634, 121.92914],
+      [25.02648, 121.9287],
+      [25.02649, 121.92845],
+      [25.02646, 121.92806],
+      [25.02644, 121.9279],
+      [25.02644, 121.92759],
+      [25.02649, 121.92728],
+      [25.02648, 121.927],
+      [25.02646, 121.92682],
+      [25.02645, 121.92634],
+      [25.02649, 121.92617],
+      [25.02654, 121.92609],
+      [25.0267746, 121.9259013],
+      [25.0267, 121.92579],
+      [25.02659, 121.92561],
+      [25.02651, 121.92542],
+      [25.02648, 121.92517],
+      [25.02651, 121.92495],
+      [25.02663, 121.92452],
+      [25.0267, 121.92435],
+      [25.02675, 121.92418],
+      [25.02676, 121.924],
+      [25.02675, 121.92381],
+      [25.02676, 121.9236],
+      [25.02686, 121.9232],
+      [25.02705, 121.92278],
+      [25.0271, 121.92249],
+      [25.02706, 121.92229],
+      [25.027, 121.92206],
+      [25.02691, 121.92169],
+      [25.02675, 121.92116],
+      [25.02664, 121.92089],
+      [25.02646, 121.92065],
+      [25.02628, 121.92048],
+      [25.0259, 121.92013],
+      [25.02552, 121.91985],
+      [25.02519, 121.91969],
+      [25.02491, 121.91958],
+      [25.02472, 121.91952],
+      [25.02455, 121.91939],
+      [25.02388, 121.91841],
+      [25.02367, 121.91809],
+      [25.0236, 121.91801],
+      [25.02351, 121.91794],
+      [25.02315, 121.91761],
+      [25.02293, 121.91736],
+      [25.02239, 121.91651],
+      [25.02194, 121.91598],
+      [25.02166, 121.9156],
+      [25.0216643, 121.9155999],
+    ]
+  },
+  { id: 4, dist: '10.0K', color: '#9B5DE5', name: '第四棒',
+    gpxLoaded: true,
+    waypoints: [
+      [25.0217757, 121.9157629],
+      [25.02167, 121.91562],
+      [25.02155, 121.91537],
+      [25.02153, 121.91516],
+      [25.02157, 121.9148],
+      [25.02165, 121.91387],
+      [25.02162, 121.9135],
+      [25.0216, 121.91174],
+      [25.02167, 121.91049],
+      [25.02181, 121.9098],
+      [25.02199, 121.90939],
+      [25.02233, 121.90798],
+      [25.02255, 121.90728],
+      [25.02292, 121.90632],
+      [25.02357, 121.90469],
+      [25.02394, 121.90322],
+      [25.02407, 121.9009],
+      [25.02398, 121.89945],
+      [25.02337, 121.89684],
+      [25.02335, 121.89557],
+      [25.0241, 121.89391],
+      [25.0244, 121.89352],
+      [25.025, 121.89264],
+      [25.02527, 121.89103],
+      [25.02576, 121.8906],
+      [25.02595, 121.89016],
+      [25.02598, 121.88977],
+      [25.02591, 121.88933],
+      [25.0259, 121.88867],
+      [25.02597, 121.88791],
+      [25.02616, 121.88716],
+      [25.02596, 121.88595],
+      [25.02596, 121.88519],
+      [25.02612, 121.88469],
+      [25.02635, 121.88379],
+      [25.02648, 121.88312],
+      [25.02639, 121.882],
+      [25.02637, 121.88123],
+      [25.02655, 121.88091],
+      [25.02685, 121.87972],
+      [25.0266, 121.87883],
+      [25.02682, 121.87816],
+      [25.02711, 121.87722],
+      [25.0275, 121.8755],
+      [25.02733, 121.8747],
+      [25.02782, 121.87385],
+      [25.02837, 121.87328],
+      [25.02865, 121.87282],
+      [25.02969, 121.8724],
+      [25.03048, 121.87173],
+      [25.0315, 121.87141],
+      [25.03211, 121.87032],
+      [25.03233, 121.86915],
+      [25.0326, 121.86809],
+      [25.03356, 121.86628],
+      [25.03425, 121.86545],
+      [25.0348, 121.86493],
+      [25.03524, 121.86443],
+      [25.03547, 121.86428],
+      [25.03642, 121.86435],
+      [25.03713, 121.86431],
+      [25.03756, 121.864],
+      [25.0383, 121.86408],
+      [25.039, 121.86424],
+      [25.04007, 121.86423],
+      [25.04094, 121.86413],
+      [25.04202, 121.86392],
+      [25.04318, 121.86372],
+      [25.04386, 121.8636],
+      [25.04483, 121.86285],
+      [25.04584, 121.86242],
+      [25.04661, 121.86225],
+      [25.04773, 121.8615],
+      [25.04872, 121.86122],
+      [25.04998, 121.86054],
+      [25.05121, 121.85994],
+      [25.05202, 121.85944],
+      [25.05272, 121.85894],
+      [25.05277, 121.85853],
+      [25.05268, 121.85765],
+      [25.05309, 121.85663],
+      [25.05453, 121.85542],
+      [25.05559, 121.85424],
+      [25.05606, 121.85306],
+      [25.056, 121.8519],
+      [25.05627, 121.85093],
+      [25.0563892, 121.8506596],
+      [25.05749, 121.85092],
+      [25.0578, 121.85099],
+      [25.05839, 121.85073],
+      [25.05892, 121.85074],
+      [25.05909, 121.85095],
+      [25.05883, 121.85169],
+      [25.0587775, 121.851938],
+    ]
+  },
+  { id: 5, dist: '4.1K', color: '#F15BB5', name: '第五棒',
+    gpxLoaded: true,
+    waypoints: [
+      [25.0587775, 121.851938],
+      [25.05881, 121.8519],
+      [25.05883, 121.85188],
+      [25.05882, 121.85185],
+      [25.05881, 121.85179],
+      [25.05883, 121.85169],
+      [25.05895, 121.85138],
+      [25.05906, 121.8511],
+      [25.05909, 121.85088],
+      [25.05911, 121.85073],
+      [25.05893, 121.85074],
+      [25.05872, 121.85071],
+      [25.05848, 121.8507],
+      [25.05839, 121.85073],
+      [25.05823, 121.85081],
+      [25.05784, 121.85098],
+      [25.0578, 121.85099],
+      [25.05767, 121.85098],
+      [25.05749, 121.85092],
+      [25.05689, 121.85078],
+      [25.05672, 121.85074],
+      [25.05639, 121.85066],
+      [25.05627, 121.85093],
+      [25.05613, 121.85128],
+      [25.05602, 121.85165],
+      [25.056, 121.8519],
+      [25.05607, 121.85228],
+      [25.05612, 121.85275],
+      [25.05606, 121.85306],
+      [25.05595, 121.85331],
+      [25.0558, 121.8536],
+      [25.05566, 121.85394],
+      [25.05559, 121.85424],
+      [25.05544, 121.85451],
+      [25.05508, 121.8549],
+      [25.05453, 121.85542],
+      [25.05382, 121.8561],
+      [25.05349, 121.85637],
+      [25.05309, 121.85663],
+      [25.05285, 121.85688],
+      [25.05277, 121.85723],
+      [25.05268, 121.85784],
+      [25.05276, 121.85853],
+      [25.05272, 121.85894],
+      [25.05256, 121.8591],
+      [25.05202, 121.85944],
+      [25.05157, 121.85974],
+      [25.0511, 121.86],
+      [25.0509, 121.86009],
+      [25.04998, 121.86054],
+      [25.04918, 121.86094],
+      [25.04872, 121.86122],
+      [25.04822, 121.86154],
+      [25.04773, 121.8615],
+      [25.04718, 121.86192],
+      [25.04661, 121.86225],
+      [25.04584, 121.86242],
+      [25.04532, 121.8626],
+      [25.04483, 121.86285],
+      [25.04398, 121.86349],
+      [25.04386, 121.8636],
+      [25.04346, 121.86365],
+      [25.04293, 121.86374],
+      [25.0426, 121.8638],
+      [25.04202, 121.86392],
+      [25.04143, 121.86403],
+      [25.04094, 121.86413],
+      [25.04036, 121.86421],
+      [25.03971, 121.86427],
+      [25.039, 121.86424],
+      [25.0383, 121.86408],
+      [25.03763, 121.86399],
+      [25.03713, 121.86432],
+      [25.03642, 121.86435],
+      [25.03562, 121.86434],
+      [25.03534, 121.86426],
+      [25.0353, 121.86429],
+      [25.03521, 121.86436],
+      [25.03509, 121.86401],
+      [25.03489, 121.86346],
+      [25.03509, 121.86338],
+      [25.03569, 121.86316],
+      [25.036, 121.86293],
+      [25.036, 121.86277],
+      [25.0359724, 121.8625796],
+      [25.0365, 121.86243],
+      [25.0366489, 121.8623887],
+    ]
+  },
+  { id: 6, dist: '5.9K', color: '#00BBF9', name: '第六棒',
+    gpxLoaded: true,
+    waypoints: [
+      [25.0359724, 121.8625796],
+      [25.036, 121.86277],
+      [25.036, 121.86293],
+      [25.03587, 121.86303],
+      [25.03569, 121.86316],
+      [25.03544, 121.86328],
+      [25.03509, 121.86338],
+      [25.03489, 121.86346],
+      [25.03476, 121.86342],
+      [25.03459, 121.86347],
+      [25.03431, 121.86362],
+      [25.03394, 121.86382],
+      [25.03373, 121.86398],
+      [25.03366, 121.86429],
+      [25.03356, 121.86459],
+      [25.03342, 121.86475],
+      [25.03323, 121.86489],
+      [25.03292, 121.86509],
+      [25.03276, 121.86518],
+      [25.03247, 121.86582],
+      [25.03201, 121.86687],
+      [25.03172, 121.86761],
+      [25.03143, 121.86848],
+      [25.03123, 121.86914],
+      [25.03116, 121.86979],
+      [25.03107, 121.87017],
+      [25.03087, 121.8704],
+      [25.03056, 121.8705],
+      [25.0301, 121.87051],
+      [25.02982, 121.87048],
+      [25.029, 121.87039],
+      [25.02855, 121.87041],
+      [25.02819, 121.87047],
+      [25.02792, 121.87057],
+      [25.0276, 121.87074],
+      [25.02732, 121.87098],
+      [25.02709, 121.87124],
+      [25.02686, 121.87156],
+      [25.02663, 121.87198],
+      [25.02621, 121.87272],
+      [25.02598, 121.8731],
+      [25.0256, 121.87362],
+      [25.02505, 121.87421],
+      [25.02411, 121.87512],
+      [25.02368, 121.87579],
+      [25.02349, 121.87632],
+      [25.0234, 121.87684],
+      [25.0234, 121.87803],
+      [25.02342, 121.87955],
+      [25.02343, 121.88046],
+      [25.02346, 121.88234],
+      [25.02349, 121.88393],
+      [25.02355, 121.8876],
+      [25.02351, 121.88846],
+      [25.02326, 121.88923],
+      [25.023, 121.88969],
+      [25.02277, 121.89],
+      [25.02233, 121.89055],
+      [25.02201, 121.89085],
+      [25.02166, 121.89124],
+      [25.02122, 121.89177],
+      [25.02101, 121.89223],
+      [25.02063, 121.89384],
+      [25.02062, 121.89551],
+      [25.02077, 121.8965],
+      [25.02079, 121.89682],
+      [25.02059, 121.89793],
+      [25.02044, 121.89903],
+      [25.02052, 121.89959],
+      [25.02101, 121.89984],
+      [25.0214, 121.90001],
+      [25.02155, 121.90036],
+      [25.02155, 121.90089],
+      [25.02133, 121.90137],
+      [25.02087, 121.90206],
+      [25.02063, 121.90307],
+      [25.0209, 121.90457],
+      [25.02083, 121.90564],
+      [25.02057, 121.90687],
+      [25.02022, 121.90751],
+      [25.01974, 121.90753],
+      [25.01906, 121.9075],
+      [25.01852, 121.90763],
+      [25.01779, 121.90784],
+      [25.01723, 121.908],
+      [25.01672, 121.9082],
+      [25.0166456, 121.9082726],
+    ]
+  },
+  { id: 7, dist: '5.4K', color: '#06D6A0', name: '第七棒',
+    gpxLoaded: true,
+    waypoints: [
+      [25.0166456, 121.9082726],
+      [25.0166, 121.90833],
+      [25.01649, 121.9085],
+      [25.01644, 121.9087],
+      [25.01644, 121.90887],
+      [25.01651, 121.90912],
+      [25.01668, 121.90956],
+      [25.01684, 121.90995],
+      [25.01706, 121.91025],
+      [25.01721, 121.91039],
+      [25.01734, 121.91055],
+      [25.01739, 121.91079],
+      [25.01733, 121.91112],
+      [25.01718, 121.91148],
+      [25.01699, 121.91177],
+      [25.0167, 121.91219],
+      [25.01641, 121.91266],
+      [25.0163, 121.91292],
+      [25.01604, 121.91373],
+      [25.01583, 121.91406],
+      [25.01563, 121.91426],
+      [25.01571, 121.91438],
+      [25.01591, 121.91458],
+      [25.016, 121.91471],
+      [25.01601, 121.91493],
+      [25.016, 121.91508],
+      [25.01594, 121.91547],
+      [25.01594, 121.91614],
+      [25.01591, 121.91666],
+      [25.01579, 121.91703],
+      [25.01575, 121.9174],
+      [25.01581, 121.91773],
+      [25.01596, 121.91829],
+      [25.01592, 121.91853],
+      [25.0157, 121.9187],
+      [25.01534, 121.91902],
+      [25.01471, 121.91954],
+      [25.014, 121.92012],
+      [25.01324, 121.92072],
+      [25.01264, 121.92127],
+      [25.01214, 121.92184],
+      [25.01176, 121.92226],
+      [25.01161, 121.92259],
+      [25.01152, 121.92341],
+      [25.01146, 121.92423],
+      [25.01143, 121.92461],
+      [25.01175, 121.92487],
+      [25.01234, 121.92555],
+      [25.01273, 121.92596],
+      [25.01308, 121.92619],
+      [25.01369, 121.92647],
+      [25.01448, 121.92683],
+      [25.015, 121.92708],
+      [25.01545, 121.92716],
+      [25.01588, 121.92712],
+      [25.01659, 121.927],
+      [25.01689, 121.92698],
+      [25.01706, 121.92706],
+      [25.01723, 121.92727],
+      [25.01725, 121.92753],
+      [25.01722, 121.92792],
+      [25.0172, 121.92829],
+      [25.01722, 121.92851],
+      [25.01731, 121.92908],
+      [25.01744, 121.92971],
+      [25.01758, 121.93067],
+      [25.01762, 121.93096],
+      [25.01756, 121.93137],
+      [25.01752, 121.93166],
+      [25.01767, 121.93195],
+      [25.01794, 121.9322],
+      [25.01828, 121.93245],
+      [25.01857, 121.93273],
+      [25.01886, 121.93301],
+      [25.01904, 121.93316],
+      [25.01886, 121.9335],
+      [25.01864, 121.93391],
+      [25.01847, 121.93435],
+      [25.01834, 121.93504],
+      [25.01824, 121.93575],
+      [25.01822, 121.936],
+      [25.01824, 121.93646],
+      [25.01826, 121.93683],
+      [25.01831, 121.93741],
+      [25.01838, 121.93809],
+      [25.01842, 121.93858],
+      [25.01837, 121.9392],
+      [25.01829, 121.93964],
+      [25.01815, 121.93996],
+      [25.01766, 121.94074],
+      [25.01706, 121.94157],
+      [25.01664, 121.94242],
+      [25.01657, 121.9427],
+      [25.01716, 121.94294],
+      [25.01757, 121.94311],
+      [25.01807, 121.94332],
+      [25.018, 121.9435],
+      [25.01798, 121.94365],
+      [25.01804, 121.94375],
+      [25.0181261, 121.943704],
+    ]
+  },
+];
+
+const EMOJIS = ['🏃','🚶','🧑','👤','🙋','🤸','🏊'];
+
+let map;
+let avatarData = Array(7).fill(null);
+let animating = false;
+let animFrameId = null;
+let runnerMarker = null;
+let finishedMarkers = [];
+let legAvatarMarkers = []; // static avatar markers, one per leg start point
+let points = [], ptIdx = 0, lastLegIdx = -1;
+
+function buildSidebar() {
+  const grid = document.getElementById('avatarGrid');
+  const list = document.getElementById('legList');
+  const inputs = document.getElementById('fileInputs');
+
+  LEGS.forEach((leg, i) => {
+    const card = document.createElement('label');
+    card.className = 'avatar-card';
+    card.setAttribute('for', `file_${i}`);
+    card.innerHTML = `
+      <div class="leg-badge" style="background:${leg.color}">${leg.id}</div>
+      <div class="avatar-preview" id="prev_${i}" style="border-color:${leg.color}">${EMOJIS[i]}</div>
+      <div class="avatar-name">${leg.name}</div>
+      <div class="avatar-dist">${leg.dist}</div>
+    `;
+    grid.appendChild(card);
+
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = 'image/*'; inp.id = `file_${i}`;
+    inp.addEventListener('change', e => handleAvatarUpload(e, i));
+    inputs.appendChild(inp);
+
+    const item = document.createElement('div');
+    item.className = 'leg-item';
+    item.id = `legItem_${i}`;
+    item.innerHTML = `
+      <div class="leg-dot" style="background:${leg.color}"></div>
+      <div class="leg-label">${leg.name}</div>
+      <div class="leg-km">${leg.dist}</div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function handleAvatarUpload(e, idx) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    avatarData[idx] = ev.target.result;
+    document.getElementById(`prev_${idx}`).innerHTML = `<img src="${ev.target.result}" alt="">`;
+    // Refresh static map marker if it's currently visible
+    if (legAvatarMarkers[idx] && map.hasLayer(legAvatarMarkers[idx])) {
+      legAvatarMarkers[idx].setIcon(buildStaticAvatarIcon(idx));
+    }
+    showToast(`第${idx+1}棒大頭照已上傳`);
+  };
+  reader.readAsDataURL(file);
+}
+
+function initMap() {
+  map = L.map('map').setView([25.018, 121.910], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap contributors',
+  }).addTo(map);
+
+  drawRoutes();
+  placeCheckpoints();
+  fitToAllRoutes();
+  placeStaticAvatarMarkers();
+}
+
+function drawRoutes() {
+  LEGS.forEach(leg => {
+    const path = leg.waypoints.map(w => [w[0], w[1]]);
+    L.polyline(path, { color: '#000', weight: 9, opacity: 0.5 }).addTo(map);
+    L.polyline(path, { color: leg.color, weight: 5, opacity: 0.95 })
+      .addTo(map)
+      .bindTooltip(`${leg.name} (${leg.dist})`, { sticky: true });
+  });
+}
+
+// Static per-leg avatar markers (always visible on map)
+
+
+function placeCheckpoints() {
+  const makeIcon = (emoji, color, size = 34) => L.divIcon({
+    className: 'checkpoint-marker',
+    html: `<div style="background:${color};width:${size}px;height:${size}px;">${emoji}</div>`,
+    iconSize: [size, size],
+    iconAnchor: [size/2, size/2],
+  });
+
+  const s = LEGS[0].waypoints[0];
+  L.marker([s[0], s[1]], { icon: makeIcon('🏁', '#06D6A0') }).addTo(map)
+    .bindTooltip('起點：福容大飯店福隆');
+
+  for (let i = 0; i < 6; i++) {
+    const wp = LEGS[i].waypoints[LEGS[i].waypoints.length - 1];
+    L.marker([wp[0], wp[1]], { icon: makeIcon('🔄', LEGS[i+1].color, 30) }).addTo(map)
+      .bindTooltip(`接棒區 ${i+1}→${i+2}`);
+  }
+
+  const e = LEGS[6].waypoints[LEGS[6].waypoints.length - 1];
+  L.marker([e[0], e[1]], { icon: makeIcon('🏆', '#FFD700') }).addTo(map)
+    .bindTooltip('終點：福容大飯店福隆');
+}
+
+function fitToAllRoutes() {
+  const allPts = [];
+  LEGS.forEach(leg => leg.waypoints.forEach(w => allPts.push([w[0], w[1]])));
+  map.fitBounds(allPts, { padding: [40, 40] });
+}
+
+// ── Static leg avatar markers ──────────────────────────────────────────────
+function buildStaticAvatarIcon(legIdx) {
+  const leg = LEGS[legIdx];
+  const imgData = avatarData[legIdx];
+  const inner = imgData ? `<img src="${imgData}" alt="">` : EMOJIS[legIdx];
+  const size = 44;
+  return L.divIcon({
+    className: 'static-avatar-marker',
+    html: `<div class="sa-wrap" style="border-color:${leg.color}; box-shadow: 0 0 0 2px ${leg.color}88, 0 2px 10px rgba(0,0,0,0.55);">${inner}</div>`,
+    iconSize: [size, size],
+    iconAnchor: [size/2, size/2],
+  });
+}
+
+function placeStaticAvatarMarkers() {
+  // Remove any existing
+  legAvatarMarkers.forEach(m => { if (map.hasLayer(m)) map.removeLayer(m); });
+  legAvatarMarkers = [];
+  LEGS.forEach((leg, i) => {
+    const wp = leg.waypoints[0];
+    const m = L.marker([wp[0], wp[1]], {
+      icon: buildStaticAvatarIcon(i),
+      zIndexOffset: 150,
+    }).addTo(map).bindTooltip(`${leg.name} (${leg.dist})`);
+    legAvatarMarkers.push(m);
+  });
+}
+
+function hideStaticAvatar(legIdx) {
+  const m = legAvatarMarkers[legIdx];
+  if (m && map.hasLayer(m)) map.removeLayer(m);
+}
+
+function showAllStaticAvatars() {
+  legAvatarMarkers.forEach((m, i) => {
+    // Reset position back to start point
+    const wp = LEGS[i].waypoints[0];
+    m.setLatLng([wp[0], wp[1]]);
+    if (!map.hasLayer(m)) m.addTo(map);
+    m.setIcon(buildStaticAvatarIcon(i));
+  });
+}
+
+function buildFinishedIcon(legIdx) {
+  const leg = LEGS[legIdx];
+  const imgData = avatarData[legIdx];
+  const inner = imgData ? `<img src="${imgData}" alt="">` : EMOJIS[legIdx];
+  const size = 46;
+  const html = `<div class="fi-avatar" style="border-color:${leg.color};
+    box-shadow:0 0 0 2px ${leg.color}66, 0 3px 10px rgba(0,0,0,0.5);">${inner}</div>`;
+  return L.divIcon({
+    className: 'finished-marker',
+    html,
+    iconSize: [size, size],
+    iconAnchor: [size/2, size/2],
+  });
+}
+
+function buildRunnerIcon(legIdx) {
+  const leg = LEGS[legIdx];
+  const imgData = avatarData[legIdx];
+  const inner = imgData ? `<img src="${imgData}" alt="">` : EMOJIS[legIdx];
+
+  const html = `
+    <div class="ring" style="--ring: ${leg.color}88;">
+      <div class="avatar" style="border-color:${leg.color}; box-shadow: 0 0 0 3px ${leg.color}55, 0 4px 14px rgba(0,0,0,0.6);">
+        ${inner}
+      </div>
+    </div>`;
+
+  return L.divIcon({
+    className: 'runner-marker',
+    html,
+    iconSize: [60, 60],
+    iconAnchor: [30, 30],
+  });
+}
+
+function placeRunner(lat, lng, legIdx) {
+  const icon = buildRunnerIcon(legIdx);
+  if (!runnerMarker) {
+    runnerMarker = L.marker([lat, lng], { icon, zIndexOffset: 1000 }).addTo(map);
+  } else {
+    runnerMarker.setLatLng([lat, lng]);
+  }
+}
+
+function updateRunnerIcon(legIdx) {
+  if (runnerMarker) runnerMarker.setIcon(buildRunnerIcon(legIdx));
+}
+
+function removeRunner() {
+  if (runnerMarker) { map.removeLayer(runnerMarker); runnerMarker = null; }
+}
+
+function buildAllPoints() {
+  const expanded = [];
+  const STEPS = 40;
+  LEGS.forEach((leg, li) => {
+    for (let wi = 0; wi < leg.waypoints.length - 1; wi++) {
+      const a = leg.waypoints[wi];
+      const b = leg.waypoints[wi + 1];
+      for (let s = 0; s <= STEPS; s++) {
+        const t = s / STEPS;
+        expanded.push({
+          lat: a[0] + (b[0] - a[0]) * t,
+          lng: a[1] + (b[1] - a[1]) * t,
+          legIdx: li,
+        });
+      }
+    }
+  });
+  return expanded;
+}
+
+function highlightLeg(legIdx) {
+  document.querySelectorAll('.leg-item').forEach((el, i) => {
+    el.classList.toggle('active', i === legIdx);
+  });
+  // Update static avatar markers: active leg enlarges, others shrink
+}
+
+function startAnimation() {
+  if (animating) { resetAnimation(); return; }
+  points = buildAllPoints();
+  ptIdx = 0;
+  lastLegIdx = -1;
+  animating = true;
+  document.getElementById('playBtn').textContent = '⏹ STOP';
+  hideStaticAvatar(0); // hide leg 0 static before first tick
+  tick();
+}
+
+function tick() {
+  if (!animating) return;
+
+  if (ptIdx >= points.length) {
+    // Move leg 7's static avatar to the finish line
+    if (runnerMarker) {
+      removeRunner();
+      const m = legAvatarMarkers[6];
+      if (m) {
+        const wps = LEGS[6].waypoints;
+        const end = wps[wps.length - 1];
+        m.setLatLng([end[0], end[1]]);
+        if (!map.hasLayer(m)) m.addTo(map);
+      }
+    }
+    showToast('🏆 抵達終點！恭喜完賽！');
+    document.getElementById('statusText').textContent = '🏆 抵達終點！';
+    setProgress(1);
+    document.getElementById('playBtn').textContent = '▶ PLAY';
+    animating = false;
+    return;
+  }
+
+  const pt = points[ptIdx];
+  const legIdx = pt.legIdx;
+
+  if (legIdx !== lastLegIdx) {
+    // Remove previous runner — only one moving avatar at a time
+    if (lastLegIdx >= 0 && runnerMarker) {
+      removeRunner();
+      // Move previous leg's static avatar to its finish (relay) point
+      const m = legAvatarMarkers[lastLegIdx];
+      if (m) {
+        const wps = LEGS[lastLegIdx].waypoints;
+        const end = wps[wps.length - 1];
+        m.setLatLng([end[0], end[1]]);
+        if (!map.hasLayer(m)) m.addTo(map);
+      }
+    }
+    hideStaticAvatar(legIdx);
+    highlightLeg(legIdx);
+    const leg = LEGS[legIdx];
+    document.getElementById('statusText').textContent = `${leg.name} (${leg.dist}) — 進行中`;
+    if (lastLegIdx >= 0) showToast(`接棒！第${legIdx+1}棒出發 🔄`);
+    lastLegIdx = legIdx;
+  }
+
+  placeRunner(pt.lat, pt.lng, legIdx);
+
+  // Gentle follow when runner approaches edge
+  const bounds = map.getBounds();
+  const latLng = L.latLng(pt.lat, pt.lng);
+  if (!bounds.pad(-0.25).contains(latLng)) {
+    map.panTo(latLng, { animate: true, duration: 0.5 });
+  }
+
+  const progress = (ptIdx / (points.length - 1)) * 100;
+  setProgress(ptIdx / (points.length - 1));
+
+  const speed = parseInt(document.getElementById('speedSlider').value);
+  // speed 1-10 → stepsPerTick 1-10, delay 16ms fixed (≈60fps)
+  // This gives ~10x speed range vs old single-step approach
+  const stepsPerTick = speed;
+  const delay = 16;
+
+  ptIdx += stepsPerTick;
+  animFrameId = setTimeout(tick, delay);
+}
+
+function resetAnimation() {
+  animating = false;
+  clearTimeout(animFrameId);
+  ptIdx = 0;
+  lastLegIdx = -1;
+  removeRunner();
+  finishedMarkers.forEach(m => map.removeLayer(m));
+  finishedMarkers = [];
+  showAllStaticAvatars();
+  document.getElementById('playBtn').textContent = '▶ PLAY';
+  setProgress(0);
+  document.getElementById('statusText').textContent = '準備就緒 — 按下 PLAY 開始';
+  document.querySelectorAll('.leg-item').forEach(el => el.classList.remove('active'));
+}
+
+// ── Scrubber ──────────────────────────────────────────────────────────────
+function setProgress(ratio) {
+  const pct = (ratio * 100).toFixed(2) + '%';
+  document.getElementById('scrubberFill').style.width = pct;
+  document.getElementById('scrubberThumb').style.left = pct;
+}
+
+(function initScrubber() {
+  const wrap = document.getElementById('scrubberWrap');
+  let dragging = false;
+
+  function getRatio(e) {
+    const rect = wrap.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  }
+
+  function seekTo(ratio) {
+    if (!points.length) { points = buildAllPoints(); lastLegIdx = -1; }
+    clearTimeout(animFrameId);
+    ptIdx = Math.round(ratio * (points.length - 1));
+    setProgress(ratio);
+    if (ptIdx < points.length) {
+      const pt = points[ptIdx];
+      placeRunner(pt.lat, pt.lng, pt.legIdx);
+      hideStaticAvatar(pt.legIdx);
+      highlightLeg(pt.legIdx);
+      const leg = LEGS[pt.legIdx];
+      document.getElementById('statusText').textContent = `${leg.name} (${leg.dist}) — 進行中`;
+      lastLegIdx = pt.legIdx;
+      if (runnerMarker) updateRunnerIcon(pt.legIdx);
+    }
+    if (animating) {
+      const speed = parseInt(document.getElementById('speedSlider').value);
+      animFrameId = setTimeout(tick, 16);
+    }
+  }
+
+  function startDrag(e) {
+    if (!points.length) { points = buildAllPoints(); lastLegIdx = -1; }
+    dragging = true;
+    wrap.classList.add('dragging');
+    seekTo(getRatio(e));
+    e.preventDefault();
+  }
+
+  wrap.addEventListener('mousedown', startDrag);
+  wrap.addEventListener('touchstart', startDrag, { passive: false });
+
+  document.addEventListener('mousemove', e => { if (dragging) seekTo(getRatio(e)); });
+  document.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    seekTo(getRatio(e));
+    e.preventDefault();
+  }, { passive: false });
+
+  function endDrag() { if (dragging) { dragging = false; wrap.classList.remove('dragging'); } }
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+})();
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── GPX Upload & Parse ────────────────────────────────────────────────────
+function buildGpxGrid() {
+  const grid = document.getElementById('gpxGrid');
+  const inputs = document.getElementById('fileInputs');
+
+  LEGS.forEach((leg, i) => {
+    const btn = document.createElement('label');
+    btn.className = 'gpx-btn' + (leg.gpxLoaded ? ' loaded' : '');
+    btn.setAttribute('for', `gpx_${i}`);
+    btn.id = `gpxBtn_${i}`;
+    btn.innerHTML = `
+      <div style="display:flex;align-items:center;gap:5px;">
+        <div class="gpx-dot" style="background:${leg.color}"></div>
+        <span class="gpx-label">${leg.name}</span>
+      </div>
+      <span class="gpx-status" id="gpxStatus_${i}">${leg.gpxLoaded ? '✓ 已載入' : '點擊上傳'}</span>
+    `;
+    grid.appendChild(btn);
+
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = '.gpx,application/gpx+xml,text/xml,application/xml';
+    inp.id = `gpx_${i}`;
+    inp.addEventListener('change', e => handleGpxUpload(e, i));
+    inputs.appendChild(inp);
+  });
+}
+
+function handleGpxUpload(e, legIdx) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const pts = parseGpx(ev.target.result);
+      if (!pts.length) throw new Error('No track points found');
+
+      // Decimate to ~80 points max for performance
+      const step = Math.max(1, Math.floor(pts.length / 80));
+      const dec = pts.filter((_, i) => i % step === 0);
+      if (dec[dec.length-1] !== pts[pts.length-1]) dec.push(pts[pts.length-1]);
+
+      LEGS[legIdx].waypoints = dec;
+      LEGS[legIdx].gpxLoaded = true;
+
+      // Update status badge
+      const statusEl = document.getElementById(`gpxStatus_${legIdx}`);
+      if (statusEl) statusEl.textContent = `✓ ${pts.length}pt`;
+      const btnEl = document.getElementById(`gpxBtn_${legIdx}`);
+      if (btnEl) btnEl.classList.add('loaded');
+
+      // Redraw routes if map is ready
+      if (map) {
+        map.eachLayer(layer => {
+          if (layer instanceof L.Polyline) map.removeLayer(layer);
+        });
+        drawRoutes();
+        fitToAllRoutes();
+      }
+
+      showToast(`第${legIdx+1}棒 GPX 已載入 (${pts.length} 點)`);
+    } catch(err) {
+      showToast(`⚠️ GPX 解析失敗: ${err.message}`);
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function parseGpx(text) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(text, 'text/xml');
+  const trkpts = doc.querySelectorAll('trkpt');
+  const pts = [];
+  trkpts.forEach(pt => {
+    const lat = parseFloat(pt.getAttribute('lat'));
+    const lon = parseFloat(pt.getAttribute('lon'));
+    if (!isNaN(lat) && !isNaN(lon)) pts.push([lat, lon]);
+  });
+  // Deduplicate consecutive identical points
+  return pts.filter((p, i) => i === 0 || p[0] !== pts[i-1][0] || p[1] !== pts[i-1][1]);
+}
+
+// Build UI immediately
+buildSidebar();
+buildGpxGrid();
+
+document.getElementById('playBtn').addEventListener('click', () => {
+  if (typeof L === 'undefined') { showToast('地圖尚未載入，請稍候…'); return; }
+  if (animating) resetAnimation();
+  else startAnimation();
+});
+
+document.getElementById('speedSlider').addEventListener('input', e => {
+  document.getElementById('speedVal').textContent = e.target.value + '×';
+});
+
+// Load Leaflet JS with multiple CDN fallbacks
+const LEAFLET_CDNS = [
+  'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js',
+  'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js',
+];
+
+function loadLeaflet(idx = 0) {
+  if (typeof L !== 'undefined') { initMap(); return; }
+  if (idx >= LEAFLET_CDNS.length) {
+    document.getElementById('map').innerHTML =
+      '<div style="padding:40px;color:#f87171;text-align:center;">⚠️ 無法載入地圖函式庫，請檢查網路連線</div>';
+    return;
+  }
+  const s = document.createElement('script');
+  s.src = LEAFLET_CDNS[idx];
+  s.onload = () => { if (typeof L !== 'undefined') initMap(); else loadLeaflet(idx + 1); };
+  s.onerror = () => loadLeaflet(idx + 1);
+  document.head.appendChild(s);
+}
+
+loadLeaflet();
+</script>
+</body>
+</html>
