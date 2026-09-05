@@ -83,7 +83,7 @@ object-fit:contain;object-position:top}
 <nav class="rail">
   <div class="rail__head">
     <h1>LIFF e2e 測試報告</h1>
-    <p class="run">main @ 829aff683dd97c69441ee11e03b2921a13e8d265</p>
+    <p class="run">main @ 6e5959f08a6e2df15bb9ce2b507e11ac0190ceb9</p>
     <p class="tally"><b>47<span>通過</span></b><b class="">0<span>失敗</span></b></p>
   </div>
   <div class="nav">
@@ -249,17 +249,17 @@ object-fit:contain;object-position:top}
 <a class="phone" href="shots/tests-e2e-test_liff_flows-test_the_stylesheet_is_inlined_not_fetched-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_the_stylesheet_is_inlined_not_fetched-chromium.png" alt="test_the_stylesheet_is_inlined_not_fetched"></a>
 </article>
 <article class="card card--ok" id="tests-e2e-test_liff_sdk_loading-test_a_slow_sdk_is_waited_for_rather_than_missed-chromium">
-<h4>SDK 慢了 0.6 秒才到，頁面照樣等到它，不會提早放棄</h4>
+<h4>SDK 慢了 0.6 秒才到，頁面照樣等到它，不會提早放棄。截圖一樣停在被擋掉的「讀取失敗」，那就是跑完等待的證據</h4>
 <p class="nodeid">test_a_slow_sdk_is_waited_for_rather_than_missed<br>tests/e2e/test_liff_sdk_loading.py::test_a_slow_sdk_is_waited_for_rather_than_missed[chromium]</p>
 <a class="phone" href="shots/tests-e2e-test_liff_sdk_loading-test_a_slow_sdk_is_waited_for_rather_than_missed-chromium.png"><img src="shots/tests-e2e-test_liff_sdk_loading-test_a_slow_sdk_is_waited_for_rather_than_missed-chromium.png" alt="test_a_slow_sdk_is_waited_for_rather_than_missed"></a>
 </article>
 <article class="card card--ok" id="tests-e2e-test_liff_sdk_loading-test_the_page_waits_for_the_deferred_sdk_instead_of_crashing-chromium">
-<h4>LIFF SDK 掛了 defer、在頁面程式之後才執行，頁面會等它就緒才呼叫 liff.init，不會當掉</h4>
+<h4>LIFF SDK 掛了 defer、在頁面程式之後才執行，頁面會等它就緒才呼叫 liff.init。截圖停在「讀取失敗」是刻意的：測試把 API 請求擋掉，走得到那一步就證明 SDK 等到了</h4>
 <p class="nodeid">test_the_page_waits_for_the_deferred_sdk_instead_of_crashing<br>tests/e2e/test_liff_sdk_loading.py::test_the_page_waits_for_the_deferred_sdk_instead_of_crashing[chromium]</p>
 <a class="phone" href="shots/tests-e2e-test_liff_sdk_loading-test_the_page_waits_for_the_deferred_sdk_instead_of_crashing-chromium.png"><img src="shots/tests-e2e-test_liff_sdk_loading-test_the_page_waits_for_the_deferred_sdk_instead_of_crashing-chromium.png" alt="test_the_page_waits_for_the_deferred_sdk_instead_of_crashing"></a>
 </article>
 <article class="card card--ok" id="tests-e2e-test_liff_sdk_loading-test_the_sdk_script_does_not_block_the_first_paint-chromium">
-<h4>SDK 永遠不回來時，畫面仍然畫得出來（defer 的重點：它不再擋住繪製）</h4>
+<h4>SDK 永遠不回來時，畫面仍然畫得出來（defer 的重點：它不再擋住繪製）。截圖只有頁籤與標題，因為資料本來就還沒到</h4>
 <p class="nodeid">test_the_sdk_script_does_not_block_the_first_paint<br>tests/e2e/test_liff_sdk_loading.py::test_the_sdk_script_does_not_block_the_first_paint[chromium]</p>
 <a class="phone" href="shots/tests-e2e-test_liff_sdk_loading-test_the_sdk_script_does_not_block_the_first_paint-chromium.png"><img src="shots/tests-e2e-test_liff_sdk_loading-test_the_sdk_script_does_not_block_the_first_paint-chromium.png" alt="test_the_sdk_script_does_not_block_the_first_paint"></a>
 </article></div>
