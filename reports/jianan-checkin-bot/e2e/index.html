@@ -8,179 +8,254 @@
 --sans:"Noto Sans TC",system-ui,sans-serif}
 *{box-sizing:border-box}
 body{margin:0;background:var(--warm);color:var(--ink);font-family:var(--sans);line-height:1.7}
-header{max-width:1200px;margin:0 auto;padding:28px 20px 8px}
+header{max-width:1200px;margin:0 auto;padding:28px 20px 4px}
 h1{color:var(--purple);margin:0;font-size:1.5rem}
 .counts{margin:6px 0 0;color:var(--muted)}
 .count{display:inline-block;padding:2px 12px;border-radius:999px;margin-right:8px;font-weight:700}
 .count--ok{background:var(--mint);color:#2f5f2c}
 .count--err{background:#fbe9e7;color:#8a3b2a}
-main{max-width:1200px;margin:0 auto;padding:12px 20px 60px;
-display:grid;gap:18px;align-items:start;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.failed{margin:10px 0 0;padding:10px 14px;border-radius:12px;background:#fbe9e7;color:#8a3b2a}
+.failed a{color:#8a3b2a;margin-right:10px}
+main{max-width:1200px;margin:0 auto;padding:8px 20px 60px}
+section{margin:26px 0 0}
+h2{color:var(--purple);font-size:1.15rem;margin:0;padding:0 0 6px;border-bottom:2px solid var(--card-border)}
+h3{color:var(--purple-deep);font-size:.9rem;font-weight:700;letter-spacing:.04em;margin:16px 0 8px}
+h3::before{content:"— "}
+.grid{display:grid;gap:18px;align-items:start;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
 .card{background:#fff;border:2px solid var(--card-border);border-radius:16px;
 box-shadow:0 8px 30px rgba(91,75,138,.12);padding:16px;overflow:hidden}
 .card--err{border-color:#e8b4a8}
-.card h2{font-size:1rem;margin:0;color:var(--purple-deep);overflow-wrap:anywhere}
-.card--err h2::before{content:"✕ ";color:#8a3b2a}
-.card--ok h2::before{content:"✓ ";color:var(--green)}
-.nodeid{margin:2px 0 10px;color:var(--muted);font-size:.78rem;overflow-wrap:anywhere}
+.card h4{font-size:.95rem;font-weight:600;line-height:1.6;margin:0;color:var(--ink);overflow-wrap:anywhere}
+.card--err h4::before{content:"✕ ";color:#8a3b2a}
+.card--ok h4::before{content:"✓ ";color:var(--green)}
+.nodeid{margin:4px 0 10px;color:var(--muted);font-size:.72rem;line-height:1.5;overflow-wrap:anywhere}
 .error{background:#fbe9e7;color:#8a3b2a;padding:10px 12px;border-radius:12px;
 font-size:.8rem;white-space:pre-wrap;word-break:break-word;margin:0 0 10px}
 img{width:100%;display:block;border:1px solid var(--card-border);border-radius:12px;background:#fff;
 max-height:380px;object-fit:cover;object-position:top;cursor:zoom-in}
 </style></head><body>
 <header><h1>LIFF e2e 測試報告</h1>
-<p class="counts">main @ bea96ae47c9b39b0b9aad85ad23c0fee323b4764</p>
-<p class="counts"><span class="count count--ok">30 通過</span><span class="count count--err">0 失敗</span></p>
+<p class="counts">main @ d63387c489d68816a3f404179094875bd0faf7c2</p>
+<p class="counts"><span class="count count--ok">39 通過</span><span class="count count--err">0 失敗</span></p>
+
 </header>
 <main>
-<article class="card card--ok">
-<h2>test_the_server_answers_from_the_pinned_clock</h2>
-<p class="nodeid">tests/e2e/test_clock_pinning.py::test_the_server_answers_from_the_pinned_clock[chromium]</p>
-<a href="shots/tests-e2e-test_clock_pinning-test_the_server_answers_from_the_pinned_clock-chromium.png"><img src="shots/tests-e2e-test_clock_pinning-test_the_server_answers_from_the_pinned_clock-chromium.png" alt="test_the_server_answers_from_the_pinned_clock"></a>
-</article>
-<article class="card card--ok">
-<h2>test_attended_question_follows_the_chosen_date</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_attended_question_follows_the_chosen_date[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_attended_question_follows_the_chosen_date-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_attended_question_follows_the_chosen_date-chromium.png" alt="test_attended_question_follows_the_chosen_date"></a>
-</article>
-<article class="card card--ok">
-<h2>test_bind_flow</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_bind_flow[chromium]</p>
+<section><h2>綁定志工身分</h2>
+<h3>正常流程</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_bind_flow-chromium">
+<h4>輸入名單上的姓名與電話送出後顯示已綁定，再打開一次只看到綁定狀態、不再出現表單</h4>
+<p class="nodeid">test_bind_flow<br>tests/e2e/test_liff_flows.py::test_bind_flow[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_bind_flow-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_bind_flow-chromium.png" alt="test_bind_flow"></a>
 </article>
-<article class="card card--ok">
-<h2>test_bind_flow_writes_the_phone_back_when_the_roster_has_none</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_bind_flow_writes_the_phone_back_when_the_roster_has_none[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_bind_flow_writes_the_phone_back_when_the_roster_has_none-chromium">
+<h4>名單上還沒有電話的志工，第一次綁定輸入的號碼會回寫進志工名單</h4>
+<p class="nodeid">test_bind_flow_writes_the_phone_back_when_the_roster_has_none<br>tests/e2e/test_liff_flows.py::test_bind_flow_writes_the_phone_back_when_the_roster_has_none[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_bind_flow_writes_the_phone_back_when_the_roster_has_none-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_bind_flow_writes_the_phone_back_when_the_roster_has_none-chromium.png" alt="test_bind_flow_writes_the_phone_back_when_the_roster_has_none"></a>
 </article>
-<article class="card card--ok">
-<h2>test_bind_not_found_shows_message</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_bind_not_found_shows_message[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_bind_not_found_shows_message-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_bind_not_found_shows_message-chromium.png" alt="test_bind_not_found_shows_message"></a>
-</article>
-<article class="card card--ok">
-<h2>test_bind_page_loads_without_js_errors</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_bind_page_loads_without_js_errors[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_bind_page_loads_without_js_errors-chromium">
+<h4>打開綁定頁，表單正常顯示，瀏覽器主控台沒有任何 JS 錯誤</h4>
+<p class="nodeid">test_bind_page_loads_without_js_errors<br>tests/e2e/test_liff_flows.py::test_bind_page_loads_without_js_errors[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_bind_page_loads_without_js_errors-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_bind_page_loads_without_js_errors-chromium.png" alt="test_bind_page_loads_without_js_errors"></a>
 </article>
-<article class="card card--ok">
-<h2>test_checkin_date_param_valid_and_invalid</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_checkin_date_param_valid_and_invalid[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_checkin_date_param_valid_and_invalid-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_checkin_date_param_valid_and_invalid-chromium.png" alt="test_checkin_date_param_valid_and_invalid"></a>
-</article>
-<article class="card card--ok">
-<h2>test_checkin_flow_with_schedule_prefill</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_checkin_flow_with_schedule_prefill[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_checkin_flow_with_schedule_prefill-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_checkin_flow_with_schedule_prefill-chromium.png" alt="test_checkin_flow_with_schedule_prefill"></a>
-</article>
-<article class="card card--ok">
-<h2>test_checkin_page_param_bind_redirects</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_checkin_page_param_bind_redirects[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_checkin_page_param_bind_redirects-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_checkin_page_param_bind_redirects-chromium.png" alt="test_checkin_page_param_bind_redirects"></a>
-</article>
-<article class="card card--ok">
-<h2>test_checkin_unbound_redirects_to_bind</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_checkin_unbound_redirects_to_bind[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_checkin_unbound_redirects_to_bind-chromium">
+<h4>還沒綁定的人打開服務回報頁，會被自動帶到綁定頁</h4>
+<p class="nodeid">test_checkin_unbound_redirects_to_bind<br>tests/e2e/test_liff_flows.py::test_checkin_unbound_redirects_to_bind[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_checkin_unbound_redirects_to_bind-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_checkin_unbound_redirects_to_bind-chromium.png" alt="test_checkin_unbound_redirects_to_bind"></a>
 </article>
-<article class="card card--ok">
-<h2>test_checkin_validation_messages</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_checkin_validation_messages[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_hours_page_unbound_redirects_to_bind-chromium">
+<h4>還沒綁定的人打開我的時數，同樣被帶到綁定頁</h4>
+<p class="nodeid">test_hours_page_unbound_redirects_to_bind<br>tests/e2e/test_liff_flows.py::test_hours_page_unbound_redirects_to_bind[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_hours_page_unbound_redirects_to_bind-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_hours_page_unbound_redirects_to_bind-chromium.png" alt="test_hours_page_unbound_redirects_to_bind"></a>
+</article></div>
+<h3>錯誤處理</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_bind_not_found_shows_message-chromium">
+<h4>姓名或電話對不上名單時顯示「查無資料，請聯絡組長」，並留下一筆原因 not_found 的失敗紀錄</h4>
+<p class="nodeid">test_bind_not_found_shows_message<br>tests/e2e/test_liff_flows.py::test_bind_not_found_shows_message[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_bind_not_found_shows_message-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_bind_not_found_shows_message-chromium.png" alt="test_bind_not_found_shows_message"></a>
+</article></div></section>
+<section><h2>服務回報</h2>
+<h3>正常流程</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_attended_question_follows_the_chosen_date-chromium">
+<h4>把日期改成昨天，上方提問跟著變成「9/4 週五有參加嗎？」而不是寫死今天</h4>
+<p class="nodeid">test_attended_question_follows_the_chosen_date<br>tests/e2e/test_liff_flows.py::test_attended_question_follows_the_chosen_date[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_attended_question_follows_the_chosen_date-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_attended_question_follows_the_chosen_date-chromium.png" alt="test_attended_question_follows_the_chosen_date"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_checkin_flow_with_schedule_prefill-chromium">
+<h4>當天有排班時活動與班級自動勾好；送出後顯示回報摘要，改回報「沒有參加」會把前一次的紀錄作廢</h4>
+<p class="nodeid">test_checkin_flow_with_schedule_prefill<br>tests/e2e/test_liff_flows.py::test_checkin_flow_with_schedule_prefill[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_checkin_flow_with_schedule_prefill-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_checkin_flow_with_schedule_prefill-chromium.png" alt="test_checkin_flow_with_schedule_prefill"></a>
+</article></div>
+<h3>錯誤處理</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_checkin_date_param_valid_and_invalid-chromium">
+<h4>網址帶 ?date= 補報：可回報範圍內的日期直接帶入，太舊的退回今天並提示，亂填的字串也退回今天</h4>
+<p class="nodeid">test_checkin_date_param_valid_and_invalid<br>tests/e2e/test_liff_flows.py::test_checkin_date_param_valid_and_invalid[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_checkin_date_param_valid_and_invalid-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_checkin_date_param_valid_and_invalid-chromium.png" alt="test_checkin_date_param_valid_and_invalid"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_checkin_validation_messages-chromium">
+<h4>什麼都沒勾就送出提示「至少選擇一項」，勾了進班卻沒填班級提示「需要填寫班級」，兩種都不會寫進服務紀錄</h4>
+<p class="nodeid">test_checkin_validation_messages<br>tests/e2e/test_liff_flows.py::test_checkin_validation_messages[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_checkin_validation_messages-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_checkin_validation_messages-chromium.png" alt="test_checkin_validation_messages"></a>
 </article>
-<article class="card card--ok">
-<h2>test_expired_id_token_relogins_and_recovers</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_expired_id_token_relogins_and_recovers[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_future_date_is_refused_and_the_field_goes_back-chromium">
+<h4>選到未來日期時提示「不可選未來日期」，日期欄位自動退回今天</h4>
+<p class="nodeid">test_future_date_is_refused_and_the_field_goes_back<br>tests/e2e/test_liff_flows.py::test_future_date_is_refused_and_the_field_goes_back[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_future_date_is_refused_and_the_field_goes_back-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_future_date_is_refused_and_the_field_goes_back-chromium.png" alt="test_future_date_is_refused_and_the_field_goes_back"></a>
+</article></div></section>
+<section><h2>我的時數</h2>
+<h3>正常流程</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_hours_page_shows_summary_and_details-chromium">
+<h4>顯示統計區間內的總時數、各活動次數與明細，作廢的與區間外的紀錄都不算</h4>
+<p class="nodeid">test_hours_page_shows_summary_and_details<br>tests/e2e/test_liff_flows.py::test_hours_page_shows_summary_and_details[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_hours_page_shows_summary_and_details-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_hours_page_shows_summary_and_details-chromium.png" alt="test_hours_page_shows_summary_and_details"></a>
+</article></div>
+<h3>錯誤處理</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_hours_page_without_records_or_period-chromium">
+<h4>區間內沒有紀錄時顯示空狀態；統計分頁還沒填起訖日時顯示提示，而不是一片空白</h4>
+<p class="nodeid">test_hours_page_without_records_or_period<br>tests/e2e/test_liff_flows.py::test_hours_page_without_records_or_period[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_hours_page_without_records_or_period-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_hours_page_without_records_or_period-chromium.png" alt="test_hours_page_without_records_or_period"></a>
+</article></div></section>
+<section><h2>我的排班</h2>
+<h3>正常流程</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_schedule_page_statuses_and_backfill_link-chromium">
+<h4>列出排班日、同日同班的夥伴與已回報／未回報／尚未到；點「補報」會帶著那天的日期打開回報頁並預填</h4>
+<p class="nodeid">test_schedule_page_statuses_and_backfill_link<br>tests/e2e/test_liff_flows.py::test_schedule_page_statuses_and_backfill_link[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_schedule_page_statuses_and_backfill_link-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_schedule_page_statuses_and_backfill_link-chromium.png" alt="test_schedule_page_statuses_and_backfill_link"></a>
+</article></div>
+<h3>錯誤處理</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_schedule_page_without_schedule-chromium">
+<h4>排班列全被停用時顯示「目前沒有排班」，不是空的清單</h4>
+<p class="nodeid">test_schedule_page_without_schedule<br>tests/e2e/test_liff_flows.py::test_schedule_page_without_schedule[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_schedule_page_without_schedule-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_schedule_page_without_schedule-chromium.png" alt="test_schedule_page_without_schedule"></a>
+</article></div></section>
+<section><h2>頁面切換</h2>
+<h3>正常流程</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_checkin_page_param_bind_redirects-chromium">
+<h4>Rich Menu 只能設一個 LIFF 網址，用 ?page=bind 進來時會切到綁定頁</h4>
+<p class="nodeid">test_checkin_page_param_bind_redirects<br>tests/e2e/test_liff_flows.py::test_checkin_page_param_bind_redirects[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_checkin_page_param_bind_redirects-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_checkin_page_param_bind_redirects-chromium.png" alt="test_checkin_page_param_bind_redirects"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_nav_switches_between_pages_keeping_uid-chromium">
+<h4>回報／時數／排班三個頁籤互相切換，uid 一路帶著不會掉</h4>
+<p class="nodeid">test_nav_switches_between_pages_keeping_uid<br>tests/e2e/test_liff_flows.py::test_nav_switches_between_pages_keeping_uid[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_nav_switches_between_pages_keeping_uid-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_nav_switches_between_pages_keeping_uid-chromium.png" alt="test_nav_switches_between_pages_keeping_uid"></a>
+</article></div></section>
+<section><h2>效能面板</h2>
+<h3>正常流程</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_perf_panel_is_absent_without_the_query_param-chromium">
+<h4>網址沒帶 ?perf=1 時畫面上沒有效能面板，量測那段程式完全不執行</h4>
+<p class="nodeid">test_perf_panel_is_absent_without_the_query_param<br>tests/e2e/test_liff_flows.py::test_perf_panel_is_absent_without_the_query_param[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_perf_panel_is_absent_without_the_query_param-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_perf_panel_is_absent_without_the_query_param-chromium.png" alt="test_perf_panel_is_absent_without_the_query_param"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_perf_panel_reports_the_spans_it_measured-chromium">
+<h4>帶了 ?perf=1 時面板列出 liff.init、/api/me、/api/checkin/context 與資料就緒各段耗時</h4>
+<p class="nodeid">test_perf_panel_reports_the_spans_it_measured<br>tests/e2e/test_liff_flows.py::test_perf_panel_reports_the_spans_it_measured[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_perf_panel_reports_the_spans_it_measured-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_perf_panel_reports_the_spans_it_measured-chromium.png" alt="test_perf_panel_reports_the_spans_it_measured"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_perf_panel_survives_the_nav_links-chromium">
+<h4>從回報頁切到時數頁後效能面板還在，?perf=1 會跟著頁籤連結帶過去</h4>
+<p class="nodeid">test_perf_panel_survives_the_nav_links<br>tests/e2e/test_liff_flows.py::test_perf_panel_survives_the_nav_links[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_perf_panel_survives_the_nav_links-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_perf_panel_survives_the_nav_links-chromium.png" alt="test_perf_panel_survives_the_nav_links"></a>
+</article></div></section>
+<section><h2>登入與憑證</h2>
+<h3>正常流程</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_expired_id_token_relogins_and_recovers-chromium">
+<h4>憑證過期時自動登出再登入一次，頁面自己回來，網址不留 relogin 標記</h4>
+<p class="nodeid">test_expired_id_token_relogins_and_recovers<br>tests/e2e/test_liff_flows.py::test_expired_id_token_relogins_and_recovers[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_expired_id_token_relogins_and_recovers-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_expired_id_token_relogins_and_recovers-chromium.png" alt="test_expired_id_token_relogins_and_recovers"></a>
 </article>
-<article class="card card--ok">
-<h2>test_expired_token_on_submit_keeps_the_form_and_says_so</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_expired_token_on_submit_keeps_the_form_and_says_so[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_relogin_in_line_app_reloads_instead_of_calling_login-chromium">
+<h4>LINE App 內的 LIFF 瀏覽器不能呼叫 login()，改成重新載入讓 liff.init() 換發憑證</h4>
+<p class="nodeid">test_relogin_in_line_app_reloads_instead_of_calling_login<br>tests/e2e/test_liff_flows.py::test_relogin_in_line_app_reloads_instead_of_calling_login[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_relogin_in_line_app_reloads_instead_of_calling_login-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_relogin_in_line_app_reloads_instead_of_calling_login-chromium.png" alt="test_relogin_in_line_app_reloads_instead_of_calling_login"></a>
+</article></div>
+<h3>錯誤處理</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_expired_token_on_submit_keeps_the_form_and_says_so-chromium">
+<h4>按下送出的瞬間憑證過期：留在原畫面說明「登入已過期」，剛填的內容不被清掉</h4>
+<p class="nodeid">test_expired_token_on_submit_keeps_the_form_and_says_so<br>tests/e2e/test_liff_flows.py::test_expired_token_on_submit_keeps_the_form_and_says_so[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_expired_token_on_submit_keeps_the_form_and_says_so-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_expired_token_on_submit_keeps_the_form_and_says_so-chromium.png" alt="test_expired_token_on_submit_keeps_the_form_and_says_so"></a>
 </article>
-<article class="card card--ok">
-<h2>test_expired_token_while_changing_date_keeps_the_form</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_expired_token_while_changing_date_keeps_the_form[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_expired_token_while_changing_date_keeps_the_form-chromium">
+<h4>改日期時才發現憑證過期：一樣不轉址，已填的備註留著</h4>
+<p class="nodeid">test_expired_token_while_changing_date_keeps_the_form<br>tests/e2e/test_liff_flows.py::test_expired_token_while_changing_date_keeps_the_form[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_expired_token_while_changing_date_keeps_the_form-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_expired_token_while_changing_date_keeps_the_form-chromium.png" alt="test_expired_token_while_changing_date_keeps_the_form"></a>
 </article>
-<article class="card card--ok">
-<h2>test_fill_alone_sends_change_to_the_date_field</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_fill_alone_sends_change_to_the_date_field[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_fill_alone_sends_change_to_the_date_field-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_fill_alone_sends_change_to_the_date_field-chromium.png" alt="test_fill_alone_sends_change_to_the_date_field"></a>
-</article>
-<article class="card card--ok">
-<h2>test_future_date_is_refused_and_the_field_goes_back</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_future_date_is_refused_and_the_field_goes_back[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_future_date_is_refused_and_the_field_goes_back-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_future_date_is_refused_and_the_field_goes_back-chromium.png" alt="test_future_date_is_refused_and_the_field_goes_back"></a>
-</article>
-<article class="card card--ok">
-<h2>test_hours_page_shows_summary_and_details</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_hours_page_shows_summary_and_details[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_hours_page_shows_summary_and_details-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_hours_page_shows_summary_and_details-chromium.png" alt="test_hours_page_shows_summary_and_details"></a>
-</article>
-<article class="card card--ok">
-<h2>test_hours_page_unbound_redirects_to_bind</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_hours_page_unbound_redirects_to_bind[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_hours_page_unbound_redirects_to_bind-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_hours_page_unbound_redirects_to_bind-chromium.png" alt="test_hours_page_unbound_redirects_to_bind"></a>
-</article>
-<article class="card card--ok">
-<h2>test_hours_page_without_records_or_period</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_hours_page_without_records_or_period[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_hours_page_without_records_or_period-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_hours_page_without_records_or_period-chromium.png" alt="test_hours_page_without_records_or_period"></a>
-</article>
-<article class="card card--ok">
-<h2>test_later_401_after_a_relogin_does_not_redirect_again</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_later_401_after_a_relogin_does_not_redirect_again[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_later_401_after_a_relogin_does_not_redirect_again-chromium">
+<h4>同一次載入中較晚的請求才回 401 時，仍然只重新登入一次</h4>
+<p class="nodeid">test_later_401_after_a_relogin_does_not_redirect_again<br>tests/e2e/test_liff_flows.py::test_later_401_after_a_relogin_does_not_redirect_again[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_later_401_after_a_relogin_does_not_redirect_again-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_later_401_after_a_relogin_does_not_redirect_again-chromium.png" alt="test_later_401_after_a_relogin_does_not_redirect_again"></a>
 </article>
-<article class="card card--ok">
-<h2>test_nav_switches_between_pages_keeping_uid</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_nav_switches_between_pages_keeping_uid[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_nav_switches_between_pages_keeping_uid-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_nav_switches_between_pages_keeping_uid-chromium.png" alt="test_nav_switches_between_pages_keeping_uid"></a>
-</article>
-<article class="card card--ok">
-<h2>test_relogin_guard_survives_blocked_session_storage</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_relogin_guard_survives_blocked_session_storage[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_relogin_guard_survives_blocked_session_storage-chromium">
+<h4>瀏覽器封鎖 sessionStorage 時也不會變成無限轉址，重新登入的標記改走網址</h4>
+<p class="nodeid">test_relogin_guard_survives_blocked_session_storage<br>tests/e2e/test_liff_flows.py::test_relogin_guard_survives_blocked_session_storage[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_relogin_guard_survives_blocked_session_storage-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_relogin_guard_survives_blocked_session_storage-chromium.png" alt="test_relogin_guard_survives_blocked_session_storage"></a>
 </article>
-<article class="card card--ok">
-<h2>test_relogin_happens_once_then_shows_the_error</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_relogin_happens_once_then_shows_the_error[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_relogin_happens_once_then_shows_the_error-chromium">
+<h4>重新登入後仍拿不到有效憑證時停下來顯示訊息，不無限轉圈</h4>
+<p class="nodeid">test_relogin_happens_once_then_shows_the_error<br>tests/e2e/test_liff_flows.py::test_relogin_happens_once_then_shows_the_error[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_relogin_happens_once_then_shows_the_error-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_relogin_happens_once_then_shows_the_error-chromium.png" alt="test_relogin_happens_once_then_shows_the_error"></a>
 </article>
-<article class="card card--ok">
-<h2>test_relogin_in_line_app_reloads_instead_of_calling_login</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_relogin_in_line_app_reloads_instead_of_calling_login[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_relogin_in_line_app_reloads_instead_of_calling_login-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_relogin_in_line_app_reloads_instead_of_calling_login-chromium.png" alt="test_relogin_in_line_app_reloads_instead_of_calling_login"></a>
-</article>
-<article class="card card--ok">
-<h2>test_relogin_in_line_app_stops_after_one_reload</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_relogin_in_line_app_stops_after_one_reload[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_relogin_in_line_app_stops_after_one_reload-chromium">
+<h4>在 LIFF 瀏覽器裡重新載入一次仍沒有有效憑證，就停下來顯示訊息</h4>
+<p class="nodeid">test_relogin_in_line_app_stops_after_one_reload<br>tests/e2e/test_liff_flows.py::test_relogin_in_line_app_stops_after_one_reload[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_relogin_in_line_app_stops_after_one_reload-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_relogin_in_line_app_stops_after_one_reload-chromium.png" alt="test_relogin_in_line_app_stops_after_one_reload"></a>
 </article>
-<article class="card card--ok">
-<h2>test_relogin_mark_is_removed_only_after_liff_init</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_relogin_mark_is_removed_only_after_liff_init[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_relogin_mark_is_removed_only_after_liff_init-chromium">
+<h4>LIFF 不允許 init() 完成前改網址，所以重新登入的標記要等 init() 之後才清掉</h4>
+<p class="nodeid">test_relogin_mark_is_removed_only_after_liff_init<br>tests/e2e/test_liff_flows.py::test_relogin_mark_is_removed_only_after_liff_init[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_relogin_mark_is_removed_only_after_liff_init-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_relogin_mark_is_removed_only_after_liff_init-chromium.png" alt="test_relogin_mark_is_removed_only_after_liff_init"></a>
 </article>
-<article class="card card--ok">
-<h2>test_relogin_stops_after_one_try_when_login_never_takes</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_relogin_stops_after_one_try_when_login_never_takes[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_relogin_stops_after_one_try_when_login_never_takes-chromium">
+<h4>使用者取消登入、回來時仍是登出狀態：只導一次，然後顯示「登入失敗」</h4>
+<p class="nodeid">test_relogin_stops_after_one_try_when_login_never_takes<br>tests/e2e/test_liff_flows.py::test_relogin_stops_after_one_try_when_login_never_takes[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_relogin_stops_after_one_try_when_login_never_takes-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_relogin_stops_after_one_try_when_login_never_takes-chromium.png" alt="test_relogin_stops_after_one_try_when_login_never_takes"></a>
 </article>
-<article class="card card--ok">
-<h2>test_schedule_page_statuses_and_backfill_link</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_schedule_page_statuses_and_backfill_link[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_schedule_page_statuses_and_backfill_link-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_schedule_page_statuses_and_backfill_link-chromium.png" alt="test_schedule_page_statuses_and_backfill_link"></a>
-</article>
-<article class="card card--ok">
-<h2>test_schedule_page_without_schedule</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_schedule_page_without_schedule[chromium]</p>
-<a href="shots/tests-e2e-test_liff_flows-test_schedule_page_without_schedule-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_schedule_page_without_schedule-chromium.png" alt="test_schedule_page_without_schedule"></a>
-</article>
-<article class="card card--ok">
-<h2>test_shared_url_with_relogin_mark_still_logs_in</h2>
-<p class="nodeid">tests/e2e/test_liff_flows.py::test_shared_url_with_relogin_mark_still_logs_in[chromium]</p>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_shared_url_with_relogin_mark_still_logs_in-chromium">
+<h4>?relogin=1 被存成書籤或分享出去時，標記讀過就從網址移除，不會有人卡在錯誤畫面</h4>
+<p class="nodeid">test_shared_url_with_relogin_mark_still_logs_in<br>tests/e2e/test_liff_flows.py::test_shared_url_with_relogin_mark_still_logs_in[chromium]</p>
 <a href="shots/tests-e2e-test_liff_flows-test_shared_url_with_relogin_mark_still_logs_in-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_shared_url_with_relogin_mark_still_logs_in-chromium.png" alt="test_shared_url_with_relogin_mark_still_logs_in"></a>
+</article></div></section>
+<section><h2>測試前提</h2>
+<h3>正常流程</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_clock_pinning-test_the_server_answers_from_the_pinned_clock-chromium">
+<h4>e2e 的伺服器與測試共用同一個固定時鐘，跨午夜跑也不會一邊算今天、一邊算明天</h4>
+<p class="nodeid">test_the_server_answers_from_the_pinned_clock<br>tests/e2e/test_clock_pinning.py::test_the_server_answers_from_the_pinned_clock[chromium]</p>
+<a href="shots/tests-e2e-test_clock_pinning-test_the_server_answers_from_the_pinned_clock-chromium.png"><img src="shots/tests-e2e-test_clock_pinning-test_the_server_answers_from_the_pinned_clock-chromium.png" alt="test_the_server_answers_from_the_pinned_clock"></a>
 </article>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_fill_alone_sends_change_to_the_date_field-chromium">
+<h4>Playwright 填日期欄位時本身就會送出 change 事件，上面兩個日期測試靠這個前提</h4>
+<p class="nodeid">test_fill_alone_sends_change_to_the_date_field<br>tests/e2e/test_liff_flows.py::test_fill_alone_sends_change_to_the_date_field[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_fill_alone_sends_change_to_the_date_field-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_fill_alone_sends_change_to_the_date_field-chromium.png" alt="test_fill_alone_sends_change_to_the_date_field"></a>
+</article></div></section>
+<section><h2>其他</h2>
+<h3>正常流程</h3>
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_the_inlined_css_survives_template_escaping-chromium">
+<h4>test_the_inlined_css_survives_template_escaping</h4>
+<p class="nodeid">test_the_inlined_css_survives_template_escaping<br>tests/e2e/test_liff_flows.py::test_the_inlined_css_survives_template_escaping[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_the_inlined_css_survives_template_escaping-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_the_inlined_css_survives_template_escaping-chromium.png" alt="test_the_inlined_css_survives_template_escaping"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_the_stylesheet_is_inlined_not_fetched-chromium">
+<h4>test_the_stylesheet_is_inlined_not_fetched</h4>
+<p class="nodeid">test_the_stylesheet_is_inlined_not_fetched<br>tests/e2e/test_liff_flows.py::test_the_stylesheet_is_inlined_not_fetched[chromium]</p>
+<a href="shots/tests-e2e-test_liff_flows-test_the_stylesheet_is_inlined_not_fetched-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_the_stylesheet_is_inlined_not_fetched-chromium.png" alt="test_the_stylesheet_is_inlined_not_fetched"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_sdk_loading-test_a_slow_sdk_is_waited_for_rather_than_missed-chromium">
+<h4>test_a_slow_sdk_is_waited_for_rather_than_missed</h4>
+<p class="nodeid">test_a_slow_sdk_is_waited_for_rather_than_missed<br>tests/e2e/test_liff_sdk_loading.py::test_a_slow_sdk_is_waited_for_rather_than_missed[chromium]</p>
+<a href="shots/tests-e2e-test_liff_sdk_loading-test_a_slow_sdk_is_waited_for_rather_than_missed-chromium.png"><img src="shots/tests-e2e-test_liff_sdk_loading-test_a_slow_sdk_is_waited_for_rather_than_missed-chromium.png" alt="test_a_slow_sdk_is_waited_for_rather_than_missed"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_sdk_loading-test_an_sdk_that_never_loads_says_so_instead_of_hanging-chromium">
+<h4>test_an_sdk_that_never_loads_says_so_instead_of_hanging</h4>
+<p class="nodeid">test_an_sdk_that_never_loads_says_so_instead_of_hanging<br>tests/e2e/test_liff_sdk_loading.py::test_an_sdk_that_never_loads_says_so_instead_of_hanging[chromium]</p>
+<a href="shots/tests-e2e-test_liff_sdk_loading-test_an_sdk_that_never_loads_says_so_instead_of_hanging-chromium.png"><img src="shots/tests-e2e-test_liff_sdk_loading-test_an_sdk_that_never_loads_says_so_instead_of_hanging-chromium.png" alt="test_an_sdk_that_never_loads_says_so_instead_of_hanging"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_sdk_loading-test_the_page_waits_for_the_deferred_sdk_instead_of_crashing-chromium">
+<h4>test_the_page_waits_for_the_deferred_sdk_instead_of_crashing</h4>
+<p class="nodeid">test_the_page_waits_for_the_deferred_sdk_instead_of_crashing<br>tests/e2e/test_liff_sdk_loading.py::test_the_page_waits_for_the_deferred_sdk_instead_of_crashing[chromium]</p>
+<a href="shots/tests-e2e-test_liff_sdk_loading-test_the_page_waits_for_the_deferred_sdk_instead_of_crashing-chromium.png"><img src="shots/tests-e2e-test_liff_sdk_loading-test_the_page_waits_for_the_deferred_sdk_instead_of_crashing-chromium.png" alt="test_the_page_waits_for_the_deferred_sdk_instead_of_crashing"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_sdk_loading-test_the_sdk_script_does_not_block_the_first_paint-chromium">
+<h4>test_the_sdk_script_does_not_block_the_first_paint</h4>
+<p class="nodeid">test_the_sdk_script_does_not_block_the_first_paint<br>tests/e2e/test_liff_sdk_loading.py::test_the_sdk_script_does_not_block_the_first_paint[chromium]</p>
+<a href="shots/tests-e2e-test_liff_sdk_loading-test_the_sdk_script_does_not_block_the_first_paint-chromium.png"><img src="shots/tests-e2e-test_liff_sdk_loading-test_the_sdk_script_does_not_block_the_first_paint-chromium.png" alt="test_the_sdk_script_does_not_block_the_first_paint"></a>
+</article></div></section>
 </main></body></html>
