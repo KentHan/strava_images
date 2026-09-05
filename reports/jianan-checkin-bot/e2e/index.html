@@ -7,7 +7,6 @@
 :root{--purple:#5B4B8A;--purple-deep:#4A3F6B;--green:#6FA06B;--warm:#FBF7F0;--lilac:#F3EAF6;
 --mint:#E8F1E6;--pinkp:#C9A8D4;--coral:#c98a6b;--ink:#2d2d3a;--muted:#7a7088;--card-border:#efe8f5;
 --red:#8a3b2a;--red-bg:#fbe9e7;--rail:260px;
---serif:Georgia,"Songti TC","Noto Serif TC",serif;
 --sans:system-ui,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
 --mono:ui-monospace,SFMono-Regular,Menlo,monospace}
 *{box-sizing:border-box}
@@ -20,7 +19,7 @@ a{color:inherit}
 .rail{position:fixed;inset:0 auto 0 0;width:var(--rail);background:var(--purple-deep);color:#fff;
 padding:26px 0 20px;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
 .rail__head{padding:0 22px}
-.rail h1{font-family:var(--serif);font-weight:700;font-size:1.3rem;line-height:1.4;margin:0;color:#fff}
+.rail h1{font-weight:700;font-size:1.3rem;line-height:1.4;margin:0;color:#fff}
 .run{margin:6px 0 0;font-size:.75rem;color:var(--pinkp);font-family:var(--mono);word-break:break-all}
 .tally{display:flex;gap:8px;margin:14px 0 0}
 .tally b{flex:1;background:rgba(255,255,255,.09);border-radius:12px;padding:8px 10px;font-size:1.3rem;
@@ -43,7 +42,7 @@ padding:9px 22px;text-decoration:none;font-size:.9rem;border-left:3px solid tran
 /* 樣張：一區一疊手機畫面 */
 main{max-width:1180px;margin:0 auto;padding:34px 30px 70px}
 section{margin:0 0 44px;scroll-margin-top:24px}
-h2{font-family:var(--serif);color:var(--purple);font-size:1.45rem;margin:0;
+h2{color:var(--purple);font-size:1.4rem;font-weight:700;margin:0;
 padding:0 0 10px;border-bottom:2px solid var(--card-border)}
 .kind{font-size:.75rem;font-weight:700;letter-spacing:.12em;color:var(--muted);
 margin:22px 0 12px;text-transform:none}
@@ -53,7 +52,7 @@ vertical-align:middle;margin-right:10px}
 .card{background:#fff;border:1px solid var(--card-border);border-radius:18px;
 box-shadow:0 8px 30px rgba(91,75,138,.10);padding:18px;overflow:hidden}
 .card--err{border-color:var(--coral);box-shadow:0 8px 30px rgba(138,59,42,.14)}
-.card h4{font-family:var(--sans);font-size:.95rem;font-weight:500;line-height:1.65;margin:0;
+.card h4{font-size:.95rem;font-weight:500;line-height:1.65;margin:0;
 color:var(--ink);overflow-wrap:anywhere}
 .card--err h4::before{content:"✕ ";color:var(--red);font-weight:700}
 .card--ok h4::before{content:"✓ ";color:var(--green);font-weight:700}
@@ -82,8 +81,8 @@ object-fit:cover;object-position:top}
 <nav class="rail">
   <div class="rail__head">
     <h1>LIFF e2e 測試報告</h1>
-    <p class="run">main @ 3325f8d9c2e63bcf4c63126e9d92c3f7c4b8d1c5</p>
-    <p class="tally"><b>39<span>通過</span></b><b class="">0<span>失敗</span></b></p>
+    <p class="run">main @ 946452eded907b52326c8eaa1e6b13c026b3838e</p>
+    <p class="tally"><b>47<span>通過</span></b><b class="">0<span>失敗</span></b></p>
   </div>
   <div class="nav">
 <a class="nav__item" href="#綁定志工身分"><span>綁定志工身分</span><span class="nav__tally">6</span></a>
@@ -92,7 +91,7 @@ object-fit:cover;object-position:top}
 <a class="nav__item" href="#我的排班"><span>我的排班</span><span class="nav__tally">2</span></a>
 <a class="nav__item" href="#頁面切換"><span>頁面切換</span><span class="nav__tally">2</span></a>
 <a class="nav__item" href="#效能面板"><span>效能面板</span><span class="nav__tally">3</span></a>
-<a class="nav__item" href="#載入速度"><span>載入速度</span><span class="nav__tally">6</span></a>
+<a class="nav__item" href="#載入速度"><span>載入速度</span><span class="nav__tally">14</span></a>
 <a class="nav__item" href="#登入與憑證"><span>登入與憑證</span><span class="nav__tally">11</span></a>
 <a class="nav__item" href="#測試前提"><span>測試前提</span><span class="nav__tally">2</span></a>
   </div>
@@ -217,7 +216,32 @@ object-fit:cover;object-position:top}
 </article></div></section>
 <section id="載入速度"><h2>載入速度</h2>
 <h3 class="kind">正常流程</h3>
-<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_the_stylesheet_is_inlined_not_fetched-chromium">
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_checkin_skeleton-test_no_skeleton_is_left_behind_once_the_data_is_in-chromium">
+<h4>資料到齊後骨架全部收掉，畫面上沒有殘留的灰條</h4>
+<p class="nodeid">test_no_skeleton_is_left_behind_once_the_data_is_in<br>tests/e2e/test_checkin_skeleton.py::test_no_skeleton_is_left_behind_once_the_data_is_in[chromium]</p>
+<a class="phone" href="shots/tests-e2e-test_checkin_skeleton-test_no_skeleton_is_left_behind_once_the_data_is_in-chromium.png"><img src="shots/tests-e2e-test_checkin_skeleton-test_no_skeleton_is_left_behind_once_the_data_is_in-chromium.png" alt="test_no_skeleton_is_left_behind_once_the_data_is_in"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_checkin_skeleton-test_the_form_only_appears_once_its_data_is_in-chromium">
+<h4>表單要等資料到齊才出現，所以沒有「填到一半被覆蓋」的狀態；出現時日期已經是今天</h4>
+<p class="nodeid">test_the_form_only_appears_once_its_data_is_in<br>tests/e2e/test_checkin_skeleton.py::test_the_form_only_appears_once_its_data_is_in[chromium]</p>
+<a class="phone" href="shots/tests-e2e-test_checkin_skeleton-test_the_form_only_appears_once_its_data_is_in-chromium.png"><img src="shots/tests-e2e-test_checkin_skeleton-test_the_form_only_appears_once_its_data_is_in-chromium.png" alt="test_the_form_only_appears_once_its_data_is_in"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_checkin_skeleton-test_the_layout_is_on_screen_while_the_data_is_still_loading-chromium">
+<h4>資料還在路上時，表單的版型已經在畫面上，日期也由伺服器填好了，不是一個轉圈</h4>
+<p class="nodeid">test_the_layout_is_on_screen_while_the_data_is_still_loading<br>tests/e2e/test_checkin_skeleton.py::test_the_layout_is_on_screen_while_the_data_is_still_loading[chromium]</p>
+<a class="phone" href="shots/tests-e2e-test_checkin_skeleton-test_the_layout_is_on_screen_while_the_data_is_still_loading-chromium.png"><img src="shots/tests-e2e-test_checkin_skeleton-test_the_layout_is_on_screen_while_the_data_is_still_loading-chromium.png" alt="test_the_layout_is_on_screen_while_the_data_is_still_loading"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_checkin_skeleton-test_the_read_only_pages_show_their_shape_while_loading-chromium-hours-api-hours">
+<h4>我的時數與我的排班在資料還沒到時就先畫出版型，不是一個轉圈</h4>
+<p class="nodeid">test_the_read_only_pages_show_their_shape_while_loading<br>tests/e2e/test_checkin_skeleton.py::test_the_read_only_pages_show_their_shape_while_loading[chromium-hours-**/api/hours*]</p>
+<a class="phone" href="shots/tests-e2e-test_checkin_skeleton-test_the_read_only_pages_show_their_shape_while_loading-chromium-hours-api-hours.png"><img src="shots/tests-e2e-test_checkin_skeleton-test_the_read_only_pages_show_their_shape_while_loading-chromium-hours-api-hours.png" alt="test_the_read_only_pages_show_their_shape_while_loading"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_checkin_skeleton-test_the_read_only_pages_show_their_shape_while_loading-chromium-schedule-api-schedule">
+<h4>我的時數與我的排班在資料還沒到時就先畫出版型，不是一個轉圈</h4>
+<p class="nodeid">test_the_read_only_pages_show_their_shape_while_loading<br>tests/e2e/test_checkin_skeleton.py::test_the_read_only_pages_show_their_shape_while_loading[chromium-schedule-**/api/schedule*]</p>
+<a class="phone" href="shots/tests-e2e-test_checkin_skeleton-test_the_read_only_pages_show_their_shape_while_loading-chromium-schedule-api-schedule.png"><img src="shots/tests-e2e-test_checkin_skeleton-test_the_read_only_pages_show_their_shape_while_loading-chromium-schedule-api-schedule.png" alt="test_the_read_only_pages_show_their_shape_while_loading"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_the_stylesheet_is_inlined_not_fetched-chromium">
 <h4>樣式表直接內聯在 HTML 裡，不再另外發一個 .css 請求（少一個擋住繪製的往返）</h4>
 <p class="nodeid">test_the_stylesheet_is_inlined_not_fetched<br>tests/e2e/test_liff_flows.py::test_the_stylesheet_is_inlined_not_fetched[chromium]</p>
 <a class="phone" href="shots/tests-e2e-test_liff_flows-test_the_stylesheet_is_inlined_not_fetched-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_the_stylesheet_is_inlined_not_fetched-chromium.png" alt="test_the_stylesheet_is_inlined_not_fetched"></a>
@@ -238,7 +262,22 @@ object-fit:cover;object-position:top}
 <a class="phone" href="shots/tests-e2e-test_liff_sdk_loading-test_the_sdk_script_does_not_block_the_first_paint-chromium.png"><img src="shots/tests-e2e-test_liff_sdk_loading-test_the_sdk_script_does_not_block_the_first_paint-chromium.png" alt="test_the_sdk_script_does_not_block_the_first_paint"></a>
 </article></div>
 <h3 class="kind">錯誤處理</h3>
-<div class="grid"><article class="card card--ok" id="tests-e2e-test_liff_flows-test_the_inlined_css_survives_template_escaping-chromium">
+<div class="grid"><article class="card card--ok" id="tests-e2e-test_checkin_skeleton-test_a_failure_clears_the_skeleton_instead_of_leaving_it_shimmering-chromium">
+<h4>讀取失敗時骨架整個收掉只留訊息，不會留一個還在閃的表單讓人以為還在載入</h4>
+<p class="nodeid">test_a_failure_clears_the_skeleton_instead_of_leaving_it_shimmering<br>tests/e2e/test_checkin_skeleton.py::test_a_failure_clears_the_skeleton_instead_of_leaving_it_shimmering[chromium]</p>
+<a class="phone" href="shots/tests-e2e-test_checkin_skeleton-test_a_failure_clears_the_skeleton_instead_of_leaving_it_shimmering-chromium.png"><img src="shots/tests-e2e-test_checkin_skeleton-test_a_failure_clears_the_skeleton_instead_of_leaving_it_shimmering-chromium.png" alt="test_a_failure_clears_the_skeleton_instead_of_leaving_it_shimmering"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_checkin_skeleton-test_a_failure_on_the_read_only_pages_clears_the_skeleton-chromium-hours">
+<h4>我的時數與我的排班讀取失敗時骨架整個收掉，只留訊息</h4>
+<p class="nodeid">test_a_failure_on_the_read_only_pages_clears_the_skeleton<br>tests/e2e/test_checkin_skeleton.py::test_a_failure_on_the_read_only_pages_clears_the_skeleton[chromium-hours]</p>
+<a class="phone" href="shots/tests-e2e-test_checkin_skeleton-test_a_failure_on_the_read_only_pages_clears_the_skeleton-chromium-hours.png"><img src="shots/tests-e2e-test_checkin_skeleton-test_a_failure_on_the_read_only_pages_clears_the_skeleton-chromium-hours.png" alt="test_a_failure_on_the_read_only_pages_clears_the_skeleton"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_checkin_skeleton-test_a_failure_on_the_read_only_pages_clears_the_skeleton-chromium-schedule">
+<h4>我的時數與我的排班讀取失敗時骨架整個收掉，只留訊息</h4>
+<p class="nodeid">test_a_failure_on_the_read_only_pages_clears_the_skeleton<br>tests/e2e/test_checkin_skeleton.py::test_a_failure_on_the_read_only_pages_clears_the_skeleton[chromium-schedule]</p>
+<a class="phone" href="shots/tests-e2e-test_checkin_skeleton-test_a_failure_on_the_read_only_pages_clears_the_skeleton-chromium-schedule.png"><img src="shots/tests-e2e-test_checkin_skeleton-test_a_failure_on_the_read_only_pages_clears_the_skeleton-chromium-schedule.png" alt="test_a_failure_on_the_read_only_pages_clears_the_skeleton"></a>
+</article>
+<article class="card card--ok" id="tests-e2e-test_liff_flows-test_the_inlined_css_survives_template_escaping-chromium">
 <h4>內聯的樣式沒有被樣板自動跳脫弄壞：字型與圓角實際套用在畫面上</h4>
 <p class="nodeid">test_the_inlined_css_survives_template_escaping<br>tests/e2e/test_liff_flows.py::test_the_inlined_css_survives_template_escaping[chromium]</p>
 <a class="phone" href="shots/tests-e2e-test_liff_flows-test_the_inlined_css_survives_template_escaping-chromium.png"><img src="shots/tests-e2e-test_liff_flows-test_the_inlined_css_survives_template_escaping-chromium.png" alt="test_the_inlined_css_survives_template_escaping"></a>
